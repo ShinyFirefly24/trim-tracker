@@ -1183,6 +1183,17 @@
     accent-color:var(--green-mid);
   }
 
+  /* ---- Add Entry: compact, evenly spaced (fits one screen) ---- */
+  #addEntryCard label, #addEntryCard label:first-of-type{margin:10px 0 4px;}
+  #addEntryCard #whoField label, #addEntryCard #fDateRow label{margin-top:0;}
+  #addEntryCard select, #addEntryCard input[type=date], #addEntryCard input[type=number], #addEntryCard input[type=text]{padding:9px 12px;}
+  #addEntryCard .segmented{margin-top:0 !important;margin-bottom:0 !important;}
+  #addEntryCard .segmented .seg-btn{padding:10px 8px;}
+  #addEntryCard .btn-primary{margin-top:12px !important;}
+  header{padding-bottom:10px;}
+  header .leaf-icon{width:56px;height:50px;margin-top:4px;}
+  header h1{font-size:1.9rem;margin-top:4px;}
+
   /* ---- Help ---- */
   .help-search{width:100%;margin-bottom:10px;}
   .help-topic{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--card);}
@@ -1416,11 +1427,16 @@
     </div>
 
     <form id="entryForm">
-      <label>Date</label>
-      <input type="date" id="f-date" required>
-
-      <label>Harvest</label>
-      <select id="f-harvest"></select>
+      <div class="row2" id="fDateRow">
+        <div>
+          <label>Date</label>
+          <input type="date" id="f-date" required>
+        </div>
+        <div>
+          <label>Harvest</label>
+          <select id="f-harvest"></select>
+        </div>
+      </div>
 
       <div id="fEntryTypeBlock">
         <label>Entry Type</label>
@@ -1488,11 +1504,16 @@
       <button type="button" class="btn btn-ghost btn-small" id="tmCancelEdit">Cancel</button>
     </div>
 
-    <label>Date</label>
-    <input type="date" id="tm-date">
-
-    <label>Harvest</label>
-    <select id="tm-harvest"></select>
+    <div class="row2" id="tmDateRow">
+      <div>
+        <label>Date</label>
+        <input type="date" id="tm-date">
+      </div>
+      <div>
+        <label>Harvest</label>
+        <select id="tm-harvest"></select>
+      </div>
+    </div>
 
     <label>Entry Type</label>
     <div class="segmented" id="tmEntryTypeSegmented" style="margin-bottom:14px;">
@@ -5172,12 +5193,26 @@
     {id:'rainbow', name:'Rainbow', swatch:['#d63850','#e0752a','#b38400','#2f9e56','#2186c4','#5b4fd1','#8a3fbf','#c2278a']}
   ];
 
+  // Keeps the phone's system bars (status bar / Android navigation bar)
+  // matching the header color of the current color scheme.
+  function updateThemeColor(){
+    const h = document.querySelector('header');
+    if(!h) return;
+    const cs = getComputedStyle(h);
+    const m = (cs.backgroundImage || '').match(/rgba?\([^)]*\)/);
+    const color = m ? m[0] : cs.backgroundColor;
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if(!meta){ meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
+    meta.setAttribute('content', color);
+  }
+
   function setThemeAttr(themeId){
     if(themeId && themeId !== 'forest'){
       document.documentElement.setAttribute('data-theme', themeId);
     } else {
       document.documentElement.removeAttribute('data-theme');
     }
+    updateThemeColor();
   }
 
   function updateDarkAttr(){
@@ -5186,6 +5221,7 @@
     } else {
       document.documentElement.removeAttribute('data-dark');
     }
+    updateThemeColor();
   }
 
   function renderThemeSwatches(){
