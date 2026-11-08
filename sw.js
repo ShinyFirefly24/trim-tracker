@@ -1,6 +1,6 @@
 // Trim Tracker service worker: makes the app load offline.
 // Bump CACHE when you publish a new version so devices pick it up.
-const CACHE = 'trim-tracker-v3';
+const CACHE = 'trim-tracker-v4';
 const CORE = ['./', 'index.html', 'manifest.json', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'];
 
 self.addEventListener('install', e => {

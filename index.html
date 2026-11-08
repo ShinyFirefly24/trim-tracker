@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#163f3a">
+<meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -5194,14 +5194,13 @@
     {id:'rainbow', name:'Rainbow', swatch:['#d63850','#e0752a','#b38400','#2f9e56','#2186c4','#5b4fd1','#8a3fbf','#c2278a']}
   ];
 
-  // Keeps the phone's system bars (status bar / Android navigation bar)
-  // matching the header color of the current color scheme.
+  // Keeps the phone's system bars matching the current color scheme.
   function updateThemeColor(){
-    const h = document.querySelector('header');
-    if(!h) return;
-    const cs = getComputedStyle(h);
-    const m = (cs.backgroundImage || '').match(/rgba?\([^)]*\)/);
-    const color = m ? m[0] : cs.backgroundColor;
+    // The bar sits right under the in-app bottom tab bar, so it follows that
+    // bar's color in every color scheme (light or dark).
+    const nav = document.getElementById('bottomNav');
+    if(!nav) return;
+    const color = getComputedStyle(nav).backgroundColor;
     let meta = document.querySelector('meta[name="theme-color"]');
     if(!meta){ meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
     meta.setAttribute('content', color);
