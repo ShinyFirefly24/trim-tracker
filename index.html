@@ -2093,10 +2093,26 @@
   </div>
 </div>
 
+<div id="blurModal" class="modal-backdrop" style="display:none;">
+  <div class="modal-box">
+    <h3 style="margin:0 0 8px;">This image will be blurry</h3>
+    <p style="font-size:0.88rem;margin:0 0 12px;">This report is too long to stay sharp as a single image. A PDF stays sharp at any length.</p>
+    <button type="button" class="btn btn-primary" id="blurPdf" style="width:100%;margin-top:0;">📄 Save as PDF instead</button>
+    <button type="button" class="btn btn-secondary" id="blurContinue" style="width:100%;margin-top:8px;">Continue with blurry image</button>
+    <button type="button" class="btn btn-ghost" id="blurCancel" style="width:100%;margin-top:8px;">Cancel</button>
+  </div>
+</div>
+
 <div id="reportOverlay" class="report-overlay">
   <div class="report-sheet">
     <div class="report-topbar">
-      <button class="btn btn-secondary btn-small" id="saveReportImage">💾 Save as Image</button>
+      <div class="menu-wrap">
+        <button class="btn btn-secondary btn-small" id="saveAsBtn">💾 Save as ▾</button>
+        <div class="menu-panel" id="saveAsMenu" style="display:none;left:0;right:auto;min-width:150px;">
+          <button type="button" class="btn btn-ghost" id="saveAsImage" style="width:100%;text-align:left;margin:0 0 4px;">🖼️ Image</button>
+          <button type="button" class="btn btn-ghost" id="saveAsPdf" style="width:100%;text-align:left;margin:0;">📄 PDF</button>
+        </div>
+      </div>
       <button class="btn btn-ghost btn-small" id="closeReport">✕ Close</button>
     </div>
     <div class="report-header">
@@ -6314,7 +6330,7 @@
     ctx.fillText(main, cx, y);
   }
 
-  function saveReportAsImage(){
+  function saveReportAs(format){
     if(!lastReport){
       alert('Generate a report first.');
       return;
@@ -6428,7 +6444,7 @@
         });
       });
       if(sections.length === 0){ alert('Nothing to save yet.'); return; }
-      renderSectionsToCanvasAndDownload(lastReport.title, lastReport.subtitle, sections, null, `harvest-report-${todayStr()}.png`);
+      renderSectionsToCanvasAndDownload(lastReport.title, lastReport.subtitle, sections, null, `harvest-report-${todayStr()}.png`, format);
       return;
     }
 
@@ -6463,16 +6479,16 @@
       statBoxes = {box1Val, box1Lbl, box2Val, box2Lbl};
     }
 
-    renderSectionsToCanvasAndDownload(lastReport.title, lastReport.subtitle, sections, statBoxes, `trim-tracker-report-${todayStr()}.png`);
+    renderSectionsToCanvasAndDownload(lastReport.title, lastReport.subtitle, sections, statBoxes, `trim-tracker-report-${todayStr()}.png`, format);
   }
 
   // Shared canvas renderer: draws a title/subtitle, optional stat boxes, and
   // a list of {header, items, boxed?} sections, then downloads a PNG. Used
-  // both for the whole-report image (saveReportAsImage) and for individual
+  // both for the whole-report image (saveReportAs) and for individual
   // trim-log sections (saveTrimSectionImage) so the two always look and
   // behave the same way — same fonts, same lb-conversion on gram amounts,
   // same boxed-section outline.
-  function renderSectionsToCanvasAndDownload(title, subtitle, sections, statBoxes, filename){
+  function renderSectionsToCanvasAndDownload(title, subtitle, sections, statBoxes, filename, format){
     const cDark = cssVar('--green-dark');
     const cAccent = cssVar('--green');
     const cPale = cssVar('--green-pale');
@@ -6481,7 +6497,6 @@
     const cText = cssVar('--text');
     const cBorder = cssVar('--border');
 
-    const scale = 2;
     const width = 480;
     const padX = 20;
     const headerH = 74;
@@ -6496,12 +6511,9 @@
     const rowsHeight = sections.reduce((s,sec) => s + dayHeaderH + sec.items.length * rowH + (sec.boxed ? boxPad + 8 + boxGapAfter : 0), 0);
     const height = headerH + (statBoxes ? summaryH : 0) + rowsHeight + bottomPad;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(scale, scale);
-
+    // Draws the whole report in logical (480-wide) coordinates onto any
+    // context, so it can be reused at any sharpness and for any PDF page.
+    const draw = function(ctx){
     ctx.fillStyle = cCream;
     ctx.fillRect(0, 0, width, height);
 
@@ -6597,16 +6609,149 @@
       }
     });
 
-    canvas.toBlob(function(blob){
+    };
+
+    const download = function(blob, name){
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = filename;
+      a.download = name;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    }, 'image/png');
+    };
+    const baseName = filename.replace(/\.png$/, '');
+
+    // ---- Image ----
+    // Phones (and the apps that show images) shrink very tall pictures, which
+    // is what makes long reports blurry. Keep the picture within safe limits.
+    const MAX_DIM = 8192, MAX_PIXELS = 16000000;
+    const fits = s => height * s <= MAX_DIM && (width * s) * (height * s) <= MAX_PIXELS;
+    const saveImage = function(scale){
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.floor(width * scale);
+      canvas.height = Math.floor(height * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.scale(canvas.width / width, canvas.height / height);
+      draw(ctx);
+      canvas.toBlob(function(blob){ download(blob, baseName + '.png'); }, 'image/png');
+    };
+
+    // ---- PDF (US Letter, one sharp page at a time) ----
+    const savePdf = function(){
+      const PW = 612, PH = 792, M = 36, FOOT = 14;
+      const K = (PW - 2*M) / width;                       // points per logical px
+      const pageLogical = Math.floor((PH - 2*M - FOOT) / K);
+
+      // Places where a page may end without cutting a row in half.
+      const breaks = [];
+      let y = headerH + (statBoxes ? summaryH : 0);
+      sections.forEach(sec => {
+        breaks.push(y);
+        if(sec.boxed) y += boxPad;
+        y += dayHeaderH;
+        sec.items.forEach(() => { y += rowH; if(!sec.boxed) breaks.push(y); });
+        if(sec.boxed) y += boxGapAfter;
+        breaks.push(y);
+      });
+      const pages = [];
+      let y0 = 0;
+      while(y0 < height - 0.5){
+        const target = y0 + pageLogical;
+        let y1;
+        if(target >= height){ y1 = height; }
+        else {
+          const cands = breaks.filter(b => b > y0 + pageLogical * 0.4 && b <= target);
+          y1 = cands.length ? Math.max.apply(null, cands) : target;
+        }
+        pages.push([y0, y1]);
+        y0 = y1;
+      }
+
+      const S = 3;
+      const jobs = pages.map(function(pg){
+        return new Promise(function(resolve){
+          const c = document.createElement('canvas');
+          c.width = Math.ceil(width * S);
+          c.height = Math.ceil((pg[1] - pg[0]) * S);
+          const cx = c.getContext('2d');
+          cx.scale(S, S);
+          cx.translate(0, -pg[0]);
+          draw(cx);
+          c.toBlob(function(b){
+            b.arrayBuffer().then(function(buf){
+              resolve({bytes: new Uint8Array(buf), w: c.width, h: c.height, hPt: (pg[1] - pg[0]) * K});
+            });
+          }, 'image/jpeg', 0.92);
+        });
+      });
+
+      const rgb = function(str){
+        const c = document.createElement('canvas'); c.width = c.height = 1;
+        const x = c.getContext('2d'); x.fillStyle = str; x.fillRect(0, 0, 1, 1);
+        const d = x.getImageData(0, 0, 1, 1).data;
+        return [d[0]/255, d[1]/255, d[2]/255].map(v => v.toFixed(3)).join(' ');
+      };
+      const bgRgb = rgb(cCream), txtRgb = rgb(cMuted);
+
+      Promise.all(jobs).then(function(imgs){
+        const enc = new TextEncoder();
+        const chunks = [], offsets = [];
+        let pos = 0;
+        const push = function(x){ const b = (typeof x === 'string') ? enc.encode(x) : x; chunks.push(b); pos += b.length; };
+        const n = imgs.length;
+        const objStart = function(num){ offsets[num] = pos; push(num + ' 0 obj\n'); };
+
+        push('%PDF-1.4\n');
+        objStart(1); push('<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+        let kids = [];
+        for(let i = 0; i < n; i++) kids.push((4 + 3*i) + ' 0 R');
+        objStart(2); push('<< /Type /Pages /Count ' + n + ' /Kids [' + kids.join(' ') + '] >>\nendobj\n');
+        objStart(3); push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
+
+        imgs.forEach(function(im, i){
+          const pageNum = 4 + 3*i, contNum = 5 + 3*i, imgNum = 6 + 3*i;
+          const label = 'Page ' + (i + 1) + ' of ' + n;
+          const labelW = label.length * 4.7;
+          const content =
+            'q ' + bgRgb + ' rg 0 0 ' + PW + ' ' + PH + ' re f Q\n' +
+            'q ' + (PW - 2*M).toFixed(2) + ' 0 0 ' + im.hPt.toFixed(2) + ' ' + M + ' ' + (PH - M - im.hPt).toFixed(2) + ' cm /Im0 Do Q\n' +
+            'BT /F1 9 Tf ' + txtRgb + ' rg ' + ((PW - labelW)/2).toFixed(2) + ' ' + (M - 4) + ' Td (' + label + ') Tj ET\n';
+          objStart(pageNum);
+          push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW + ' ' + PH + '] /Resources << /XObject << /Im0 ' + imgNum + ' 0 R >> /Font << /F1 3 0 R >> >> /Contents ' + contNum + ' 0 R >>\nendobj\n');
+          objStart(contNum);
+          push('<< /Length ' + content.length + ' >>\nstream\n' + content + 'endstream\nendobj\n');
+          objStart(imgNum);
+          push('<< /Type /XObject /Subtype /Image /Width ' + im.w + ' /Height ' + im.h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + im.bytes.length + ' >>\nstream\n');
+          push(im.bytes);
+          push('\nendstream\nendobj\n');
+        });
+
+        const total = 4 + 3*n;
+        const xrefPos = pos;
+        let xref = 'xref\n0 ' + total + '\n0000000000 65535 f \n';
+        for(let k = 1; k < total; k++) xref += String(offsets[k]).padStart(10, '0') + ' 00000 n \n';
+        push(xref + 'trailer\n<< /Size ' + total + ' /Root 1 0 R >>\nstartxref\n' + xrefPos + '\n%%EOF\n');
+        download(new Blob(chunks, {type: 'application/pdf'}), baseName + '.pdf');
+      });
+    };
+
+    if(format === 'pdf'){ savePdf(); return; }
+    const sharp = fits(3) ? 3 : (fits(2) ? 2 : 0);
+    if(sharp){ saveImage(sharp); return; }
+    // Too long to stay sharp as one image: warn, and offer the PDF instead.
+    const blurry = Math.min(MAX_DIM / height, Math.sqrt(MAX_PIXELS / (width * height)));
+    askBlurry(function(){ savePdf(); }, function(){ saveImage(blurry); });
+  }
+
+  function askBlurry(onPdf, onContinue){
+    const m = el('blurModal');
+    const close = function(){ m.style.display = 'none'; };
+    el('blurPdf').onclick = function(){ close(); onPdf(); };
+    el('blurContinue').onclick = function(){ close(); onContinue(); };
+    el('blurCancel').onclick = close;
+    m.style.display = 'flex';
   }
 
   // Per-section export for the trim-log reports: reconstructs just one box
@@ -6830,7 +6975,17 @@
     el('bottomNav').style.display = 'flex';
   });
 
-  el('saveReportImage').addEventListener('click', saveReportAsImage);
+  el('saveAsBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    const m = el('saveAsMenu');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  });
+  el('saveAsImage').addEventListener('click', function(){ el('saveAsMenu').style.display = 'none'; saveReportAs('image'); });
+  el('saveAsPdf').addEventListener('click', function(){ el('saveAsMenu').style.display = 'none'; saveReportAs('pdf'); });
+  document.addEventListener('click', function(e){
+    const m = el('saveAsMenu');
+    if(m.style.display !== 'none' && !m.contains(e.target)) m.style.display = 'none';
+  });
 
   // ---- Help ----
   // Help search: filters topics by title and text, opening the matches.
