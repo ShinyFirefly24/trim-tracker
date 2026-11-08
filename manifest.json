@@ -2,7 +2,7 @@
   "name": "Trim Tracker",
   "short_name": "Trim Tracker",
   "description": "Track trim work, harvests, and payments.",
-  "start_url": "./",
+  "start_url": "./?app=2",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
