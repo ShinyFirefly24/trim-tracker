@@ -1005,6 +1005,8 @@
     font-weight:600;
     font-size:0.88rem;
   }
+  .entry > div:first-child{flex:1;min-width:0;}
+  .entry .job.fit{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .entry .meta{
     font-size:0.78rem;
     color:var(--muted);
@@ -2919,7 +2921,7 @@
       return `
       <div class="entry">
         <div>
-          <div class="job">${escapeHtml(t.person)} · ${escapeHtml(trimEntryDetailText(t))}</div>
+          <div class="job fit">${escapeHtml(t.person)} · ${escapeHtml(trimEntryDetailText(t))}</div>
           ${h.active ? '' : `<div class="meta">${escapeHtml(h.name)}</div>`}
         </div>
         <div style="display:flex;align-items:center;">
@@ -2931,6 +2933,7 @@
         </div>
       </div>`;
     }).join('');
+    fitEntryText();
   }
 
   el('tm-date').addEventListener('change', function(){
@@ -3372,7 +3375,7 @@
             if(r.amount > 0) amt.push('$' + r.amount.toLocaleString());
             return `
             <div class="entry">
-              <div style="flex:1;min-width:0;"><div class="job">${escapeHtml(r.label)}</div></div>
+              <div style="flex:1;min-width:0;"><div class="job fit">${escapeHtml(r.label)}</div></div>
               <div style="display:flex;align-items:center;">
                 <div class="amounts">${gramsSpanHtml(amt.join(' / ') || '—')}</div>
                 <div class="actions">
@@ -3384,6 +3387,7 @@
           }).join('')}
         </div>`;
     }).join('');
+    fitEntryText();
   }
 
   function renderHarvestNotes(h){
@@ -4792,6 +4796,25 @@
     return coverageByPayment;
   }
 
+  // Shrinks entry text a little (down to ~70%) so each row stays on one line
+  // on narrow phones; anything still too long ends in an ellipsis. Only
+  // measures rows that are on screen, so it re-runs when a page is shown.
+  function fitEntryText(){
+    document.querySelectorAll('.entry .job.fit').forEach(el => {
+      if(!el.offsetParent) return;
+      el.style.fontSize = '';
+      const base = parseFloat(getComputedStyle(el).fontSize);
+      const min = base * 0.7;
+      let size = base;
+      while(el.scrollWidth > el.clientWidth + 0.5 && size > min){
+        size -= 0.4;
+        el.style.fontSize = size + 'px';
+      }
+    });
+  }
+  window.addEventListener('resize', fitEntryText);
+  window.addEventListener('orientationchange', fitEntryText);
+
   // Past Entries (Home): the last 7 days of work, whatever its paid status.
   // "Show more" expands in place to every entry in the active harvest. In
   // manager mode a Personal | Crew toggle switches between your own entries
@@ -4878,7 +4901,7 @@
         return `
           <div class="entry">
             <div>
-              <div class="job">${e.label}</div>
+              <div class="job fit">${e.label}</div>
               ${e.meta ? `<div class="meta">${escapeHtml(e.meta)}</div>` : ''}
             </div>
             <div style="display:flex;align-items:center;">
@@ -4900,6 +4923,7 @@
           ${rowsHtml}
         </div>`;
     }).join('');
+    fitEntryText();
   }
 
   el('entriesToggle').addEventListener('click', function(e){
@@ -4908,6 +4932,7 @@
     entriesView = b.dataset.view;
     renderEntries();
   });
+  el('entriesCard').addEventListener('toggle', fitEntryText);
   el('entriesMore').addEventListener('click', function(){
     entriesExpanded = !entriesExpanded;
     renderEntries();
@@ -7185,6 +7210,7 @@
       btn.classList.toggle('active', btn.dataset.page === (page === 'manageHarvest' ? 'settings' : page));
     });
     if(page === 'harvests') renderHarvestDetail();
+    fitEntryText();
     window.scrollTo({top:0});
   }
 
