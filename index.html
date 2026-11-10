@@ -1392,7 +1392,7 @@
       <div class="field-with-add">
         <select id="tm-person"></select>
         <div class="add-inline" id="tmPersonAddInline" style="display:none;">
-          <input type="text" id="tmNewPersonInline" placeholder="New crew member name">
+          <input type="text" id="tmNewPersonInline" placeholder="New team member name">
           <button type="button" class="btn btn-secondary" id="tmConfirmPersonAdd" style="width:auto;padding:10px 14px;">Add</button>
         </div>
       </div>
@@ -1544,7 +1544,7 @@
     <summary>📋 Past Entries</summary>
     <div class="pill-toggle" id="entriesToggle" style="display:none;">
       <button type="button" class="seg-btn pill-btn active" data-view="personal">Personal</button>
-      <button type="button" class="seg-btn pill-btn" data-view="crew">Crew</button>
+      <button type="button" class="seg-btn pill-btn" data-view="crew">Team</button>
     </div>
     <div id="entriesList"></div>
     <button type="button" class="btn btn-secondary" id="entriesMore" style="width:100%;margin-top:10px;">Show more</button>
@@ -1689,7 +1689,7 @@
 
   <div class="pill-toggle" id="reportToggle" style="display:none;">
     <button type="button" class="seg-btn pill-btn active" data-view="personal">Personal</button>
-    <button type="button" class="seg-btn pill-btn" data-view="crew">Crew</button>
+    <button type="button" class="seg-btn pill-btn" data-view="crew">Team</button>
   </div>
 
   <!-- Report generator -->
@@ -1745,7 +1745,7 @@
 
   <!-- Crew Reports (manager mode) -->
   <details class="card fixed-card" open id="crewReportCard" style="display:none;">
-    <summary>👥 Crew Reports</summary>
+    <summary>👥 Team Reports</summary>
 
     <label>Report for</label>
     <div class="segmented" id="tmScopeSegmented">
@@ -1851,7 +1851,7 @@
     </div>
 
     <div class="card" id="hvRepCrewCard" style="display:none;">
-      <h2>Crew reports</h2>
+      <h2>Team reports</h2>
       <button type="button" class="btn btn-secondary" id="hvRepCrewFull" style="width:100%;margin-bottom:8px;">📋 Full log</button>
       <button type="button" class="btn btn-secondary" id="hvRepCrewPerson" style="width:100%;margin-bottom:8px;">👥 By person</button>
       <button type="button" class="btn btn-secondary" id="hvRepCrewStrain" style="width:100%;">🌿 By strain</button>
@@ -1961,16 +1961,16 @@
     </div>
 
     <details class="settings-subsection" id="crewSettings" style="display:none;">
-      <summary>👥 Manage Crew</summary>
+      <summary>👥 Manage Team</summary>
       <div id="managerSettingsBody" style="display:none;">
         <div style="font-weight:700;font-size:0.8rem;margin:0 0 4px;">Me</div>
         <select id="meSelect"></select>
-        <div style="font-weight:700;font-size:0.8rem;margin:14px 0 4px;">Crew members</div>
+        <div style="font-weight:700;font-size:0.8rem;margin:14px 0 4px;">Team members</div>
         <div id="employeeChips"></div>
         <div class="meta" style="margin:6px 0;">Listed A–Z unless you rearrange them with ▲ ▼.</div>
         <button type="button" class="btn btn-ghost btn-small" data-sortlist="trimEmployees" style="margin-bottom:8px;">Sort A–Z</button>
         <div class="add-inline">
-          <input type="text" id="newEmployee" placeholder="Add crew member name">
+          <input type="text" id="newEmployee" placeholder="Add team member name">
           <button class="btn btn-secondary btn-small" id="addEmployee">Add</button>
         </div>
       </div>
@@ -2015,7 +2015,7 @@
         <details class="help-topic"><summary>3. Harvests</summary><div class="help-body"><p>A harvest groups related entries; one is active at a time. The Harvests tab shows each as a card with notes, strain inventories (entered in pounds, shown in pounds and grams), entries, and reports.</p><p>Marking a harvest complete is only a label; you can still edit it. Deleting a harvest moves its entries, notes, and inventories to a harvest you choose.</p></div></details>
         <details class="help-topic"><summary>4. Payments</summary><div class="help-body"><p>Log a Payment applies the amount to your unpaid work, oldest first, regardless of job type. The Payment Estimator shows what unpaid work is worth at the rates you enter, without recording anything.</p><p>The ⋮ menu on each adds a separate B-Buds rate and separate hourly rates per job.</p></div></details>
         <details class="help-topic"><summary>5. Reports</summary><div class="help-body"><p>The Reports tab offers Entries, Financial, and Unpaid reports for today, a day, a date range, or all time, optionally for a single harvest. Each harvest also has its own Reports page. Use Save as Image to keep a report; the camera button on a section saves only that section.</p></div></details>
-        <details class="help-topic"><summary>6. Manager mode</summary><div class="help-body"><p>For supervising a crew. Switch it on under App mode in Settings. Add Entry then has a Who selector to log weights and hours for yourself or your crew, and Reports adds Crew Reports (full log, by person, by strain). Switching back to Personal mode deletes nothing.</p></div></details>
+        <details class="help-topic"><summary>6. Manager mode</summary><div class="help-body"><p>For supervising a team. Switch it on under App mode in Settings. Add Entry then has a Who selector to log weights and hours for yourself or your team, and Reports adds Team Reports (full log, by person, by strain). Switching back to Personal mode deletes nothing.</p></div></details>
         <details class="help-topic"><summary>7. Settings</summary><div class="help-body"><p>Manage your strains, job types, and rooms (alphabetical unless rearranged), and the color scheme. Pound Weight sets grams per pound (default 454, range 400–500); changing it updates every pound figure, including past reports, but never your logged grams.</p></div></details>
         <details class="help-topic"><summary>8. Backup and restore</summary><div class="help-body"><p>Data is stored only on this device, so download a backup regularly. Restore from Backup replaces all current data. Clear All Data in the Danger Zone cannot be undone.</p></div></details>
         <details class="help-topic"><summary>9. Common questions</summary><div class="help-body"><h4>Did hiding B-Buds or Room delete anything?</h4><p>No. It only hides the option on the form.</p><h4>Why did a pound figure change?</h4><p>Check Pound Weight in Settings.</p><h4>How do I move to another device?</h4><p>Download a backup, then restore it on the new device.</p></div></details>
@@ -2592,7 +2592,7 @@
     // Me first, then everyone else in the saved order (A-Z unless rearranged).
     names.sort((a,b) => (b === me) - (a === me));
     const options = names.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}${name === me ? ' (me)' : ''}</option>`).join('');
-    sel.innerHTML = options + '<option value="__add__">+ Add new crew member</option>';
+    sel.innerHTML = options + '<option value="__add__">+ Add new team member</option>';
     if(current && names.includes(current)) sel.value = current;
     else if(me && names.includes(me)) sel.value = me;
     el('tmPersonAddInline').style.display = sel.value === '__add__' ? 'flex' : 'none';
@@ -2687,7 +2687,7 @@
     if(data.trimMeName && data.trimEmployees.some(p => p.name === data.trimMeName)) return;
     let name = data.trimMeName;
     if(!name){
-      const typed = prompt("What's your name? This is you in the Who list — your own entries are recorded once and also appear in the crew log.", '');
+      const typed = prompt("What's your name? This is you in the Who list — your own entries are recorded once and also appear in the team log.", '');
       name = (typed || '').trim() || 'Me';
     }
     const existing = data.trimEmployees.find(p => p.name === name);
@@ -2725,7 +2725,7 @@
       btn.classList.toggle('active', (btn.dataset.mode === 'manager') === on);
     });
     el('modeHint').textContent = on
-      ? 'Manager mode: log your crew\'s work as well as your own from one Add Entry form. Your own entries are entered once and also appear in the crew log.'
+      ? 'Manager mode: log your team\'s work as well as your own from one Add Entry form. Your own entries are entered once and also appear in the team log.'
       : 'Personal mode: just your own work, entries and payments.';
   }
 
@@ -2985,7 +2985,7 @@
 
   el('tmAddEntry').addEventListener('click', function(){
     const person = el('tm-person').value;
-    if(!person || person === '__add__'){ alert('Add and select a crew member first.'); return; }
+    if(!person || person === '__add__'){ alert('Add and select a team member first.'); return; }
 
     // Weight and hours entries are mutually exclusive — only the fields for
     // the selected entry type are read/validated, so the other set (still
@@ -3749,7 +3749,7 @@
   }
 
   function showTrimFullLogReport(logs, subtitle){
-    const title = 'Crew — Full Log';
+    const title = 'Team — Full Log';
     el('reportTitle').textContent = title;
     el('reportSubtitle').textContent = subtitle;
     const totalGrams = logs.reduce((s,t) => s + t.grams, 0);
@@ -3814,14 +3814,14 @@
   }
 
   function showTrimByPersonReport(logs, subtitle){
-    const title = 'Crew — By Person';
+    const title = 'Team — By Person';
     el('reportTitle').textContent = title;
     el('reportSubtitle').textContent = subtitle;
     const totalGrams = logs.reduce((s,t) => s + t.grams, 0);
     const people = Array.from(new Set(logs.map(t => t.person))).sort((a,b) => a.localeCompare(b));
     el('reportSummary').innerHTML = `
       <div class="stat"><div class="num">${gramsSpanHtml(roundNum(totalGrams,1).toLocaleString()+'g')}</div><div class="lbl">Total Weight</div></div>
-      <div class="stat"><div class="num">${people.length}</div><div class="lbl">Crew Members</div></div>
+      <div class="stat"><div class="num">${people.length}</div><div class="lbl">Team Members</div></div>
     `;
     if(logs.length === 0){
       el('reportRows').innerHTML = '<div class="empty">No trim log entries to show.</div>';
@@ -3851,7 +3851,7 @@
           </div>`;
       }).join('');
     }
-    lastReport = {type:'trim-person', title, subtitle, logs, totalGrams, people, count: people.length, countLabel: 'CREW MEMBERS'};
+    lastReport = {type:'trim-person', title, subtitle, logs, totalGrams, people, count: people.length, countLabel: 'TEAM MEMBERS'};
     openReportOverlay();
   }
 
@@ -3869,7 +3869,7 @@
   }
 
   function showTrimByStrainReport(logs, subtitle){
-    const title = 'Crew — By Strain';
+    const title = 'Team — By Strain';
     el('reportTitle').textContent = title;
     el('reportSubtitle').textContent = subtitle;
     const totalGrams = logs.reduce((s,t) => s + t.grams, 0);
@@ -4612,7 +4612,7 @@
     const doomed = data.entries.find(e => e.id === id);
     const linked = doomed && findLinkedCrewRow(doomed.linkId);
     if(linked){
-      if(confirm('This entry is also in the crew log. Delete that copy too?')){
+      if(confirm('This entry is also in the team log. Delete that copy too?')){
         linked.harvest.logs = linked.harvest.logs.filter(t => t !== linked.row);
       } else {
         delete linked.row.linkId;
@@ -5094,7 +5094,7 @@
           <button class="icon-btn" onclick="TT.removeEmployee(${jsq(p.name)})" title="Delete">🗑️</button>
         </div>
       </div>
-    `).join('') || '<span style="color:var(--muted);font-size:0.85rem;">No crew members added yet</span>';
+    `).join('') || '<span style="color:var(--muted);font-size:0.85rem;">No team members added yet</span>';
     renderMeSelect();
   }
 
@@ -5313,8 +5313,8 @@
   function setManagerMode(on){
     // Always confirm a mode switch, in either direction.
     const msg = on
-      ? 'Switch to Manager mode? Add Entry gets a Who picker so you can log your crew\'s work too, and a Crew Reports section appears in Reports. Your own entries and payments stay as they are.'
-      : 'Switch back to Personal mode? Your crew log and crew list are kept — just hidden until you switch back to Manager mode.';
+      ? 'Switch to Manager mode? Add Entry gets a Who picker so you can log your team\'s work too, and a Team Reports section appears in Reports. Your own entries and payments stay as they are.'
+      : 'Switch back to Personal mode? Your team log and team list are kept — just hidden until you switch back to Manager mode.';
     if(!confirm(msg)){
       syncModeControl();
       return;
@@ -5408,7 +5408,7 @@
   function openMoveHarvestModal(harvest, personal, crew, cb){
     const parts = [];
     if(personal) parts.push(`${personal} personal ${personal === 1 ? 'entry' : 'entries'}`);
-    if(crew) parts.push(`${crew} crew-log ${crew === 1 ? 'entry' : 'entries'}`);
+    if(crew) parts.push(`${crew} team-log ${crew === 1 ? 'entry' : 'entries'}`);
     const nN = (harvest.notes||[]).length, nI = (harvest.inventories||[]).length;
     if(nN) parts.push(`${nN} ${nN === 1 ? 'note' : 'notes'}`);
     if(nI) parts.push(`${nI} ${nI === 1 ? 'inventory' : 'inventories'}`);
@@ -5554,7 +5554,7 @@
     },
     removeEmployee: function(name){
       if(name === getMeName()){
-        alert('That\'s you — choose someone else as "Me" first, then you can delete this crew member.');
+        alert('That\'s you — choose someone else as "Me" first, then you can delete this team member.');
         return;
       }
       if(!confirm(`Remove "${name}"? They won't be available for new entries, but past entries and reports keep them.`)) return;
@@ -5567,7 +5567,7 @@
     toggleEmployee: function(name){
       const p = data.trimEmployees.find(p => p.name === name);
       if(p && p.active && name === getMeName()){
-        alert('That\'s you — choose someone else as "Me" first, then you can deactivate this crew member.');
+        alert('That\'s you — choose someone else as "Me" first, then you can deactivate this team member.');
         renderEmployeeChips();
         return;
       }
@@ -5577,12 +5577,12 @@
       populateTrimPersonSelect();
     },
     editEmployee: function(oldName){
-      const newName = prompt('Rename crew member:', oldName);
+      const newName = prompt('Rename team member:', oldName);
       if(!newName || !newName.trim()) return;
       const trimmed = newName.trim();
       if(trimmed === oldName) return;
       if(data.trimEmployees.some(p => p.name === trimmed)){
-        alert('A crew member with that name already exists.');
+        alert('A team member with that name already exists.');
         return;
       }
       const emp = data.trimEmployees.find(p => p.name === oldName);
@@ -6740,19 +6740,19 @@
 
     if(sectionType === 'strain-totals'){
       section = buildStrainTotalsSection(logs);
-      title = lastReport.logs ? 'Crew — Strain Totals' : 'Entries — Strain Totals';
+      title = lastReport.logs ? 'Team — Strain Totals' : 'Entries — Strain Totals';
       filenamePart = 'strain-totals';
     } else if(sectionType === 'hours-totals'){
       section = buildHoursTotalsSection(logs);
-      title = 'Crew — Hours Totals';
+      title = 'Team — Hours Totals';
       filenamePart = 'hours-totals';
     } else if(sectionType === 'day'){
       section = buildDaySection(logs, sectionKey);
-      title = 'Crew — ' + fmtDate(sectionKey);
+      title = 'Team — ' + fmtDate(sectionKey);
       filenamePart = sectionKey;
     } else if(sectionType === 'person'){
       section = buildPersonSection(logs, sectionKey);
-      title = 'Crew — ' + sectionKey;
+      title = 'Team — ' + sectionKey;
       filenamePart = sectionKey.replace(/\s+/g, '-');
     }
 
