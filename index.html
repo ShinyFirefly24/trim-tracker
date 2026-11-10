@@ -843,8 +843,8 @@
   }
   .settings-subsection{
     border-top:1px solid var(--border);
-    margin-top:10px;
-    padding-top:2px;
+    margin-top:0;
+    padding-top:0;
   }
   .settings-subsection:first-of-type{
     border-top:none;
@@ -857,7 +857,7 @@
     align-items:center;
     text-align:center;
     font-size:0.85rem;
-    padding:8px 0;
+    padding:13px 0;
     position:relative;
   }
   .settings-subsection > summary:before,
@@ -889,14 +889,14 @@
     border:1px solid var(--border);
     border-left:4px solid var(--green-mid);
     border-radius:10px;
-    padding:4px 12px 12px;
+    padding:0 12px 12px;
     margin-top:12px;
     margin-bottom:12px;
   }
   .settings-subsection[open] > summary{
     border-bottom:1px solid var(--border);
     margin-bottom:10px;
-    padding-bottom:8px;
+    padding:13px 0;
   }
   .settings-link{
     position:relative;
@@ -905,8 +905,8 @@
     align-items:center;
     text-align:center;
     border-top:1px solid var(--border);
-    margin-top:10px;
-    padding:10px 0 8px;
+    margin-top:0;
+    padding:13px 0;
     font-size:0.85rem;
     font-weight:700;
     color:var(--green-dark);
@@ -4815,18 +4815,13 @@
   window.addEventListener('resize', fitEntryText);
   window.addEventListener('orientationchange', fitEntryText);
 
-  // Past Entries (Home): the last 7 days of work, whatever its paid status.
+  // Past Entries (Home): your last 7 work days (the 7 most recent days that
+  // have entries), whatever their paid status.
   // "Show more" expands in place to every entry in the active harvest. In
   // manager mode a Personal | Crew toggle switches between your own entries
   // and the crew's. Both choices last for the session only.
   var entriesView = 'personal';
   var entriesExpanded = false;
-
-  function dateStrDaysAgo(n){
-    const [y, m, d] = todayStr().split('-').map(Number);
-    const dt = new Date(y, m - 1, d - n);
-    return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
-  }
 
   function renderEntries(){
     const container = el('entriesList');
@@ -4836,7 +4831,6 @@
     document.querySelectorAll('#entriesToggle .pill-btn').forEach(b => b.classList.toggle('active', b.dataset.view === entriesView));
     el('entriesMore').textContent = entriesExpanded ? 'Show less' : 'Show more';
 
-    const cutoff = dateStrDaysAgo(6);
     const active = getActiveHarvest();
     let rows;
     if(entriesView === 'crew'){
@@ -4844,7 +4838,6 @@
       data.trimHarvests.filter(h => !h.deleted).forEach(h => {
         if(entriesExpanded && h.id !== active.id) return;
         h.logs.forEach(t => {
-          if(!entriesExpanded && t.date < cutoff) return;
           rows.push({
             id: t.id, date: t.date,
             label: escapeHtml(t.person) + ' · ' + escapeHtml(trimEntryDetailText(t)),
@@ -4857,7 +4850,7 @@
       });
     } else {
       rows = data.entries
-        .filter(e => entriesExpanded ? e.harvestId === active.id : e.date >= cutoff)
+        .filter(e => !entriesExpanded || e.harvestId === active.id)
         .map(e => {
           const catTags = categoryTagsText(e.categories);
           const label = escapeHtml(e.job) + (e.strain ? ' · ' + escapeHtml(e.strain) : '') + (e.bbuds ? ' · B-Buds' : '') + (e.description ? ' · ' + escapeHtml(e.description) : '') + (catTags ? ' · ' + escapeHtml(catTags) : '');
@@ -4871,14 +4864,16 @@
 
     const byDate = {};
     rows.forEach(r => { (byDate[r.date] = byDate[r.date] || []).push(r); });
-    const dates = Object.keys(byDate).sort((a,b) => b.localeCompare(a));
+    let dates = Object.keys(byDate).sort((a,b) => b.localeCompare(a));
+    // Collapsed: only the 7 most recent days that have entries.
+    if(!entriesExpanded) dates = dates.slice(0, 7);
 
     const heading = entriesExpanded ? `<div class="meta" style="margin-bottom:6px;">All entries · ${escapeHtml(active.name)}</div>` : '';
     if(dates.length === 0){
       let message;
       if(entriesExpanded) message = 'No entries in this harvest yet.';
       else if(data.entries.length === 0 && !data.trimHarvests.some(h => h.logs.length)) message = 'No entries yet. Add your first one above 🌱';
-      else message = 'No entries in the last 7 days.';
+      else message = 'No entries yet.';
       container.innerHTML = heading + `<div class="empty">${message}</div>`;
       return;
     }
