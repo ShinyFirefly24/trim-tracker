@@ -1013,7 +1013,9 @@
     font-size:0.88rem;
   }
   .entry > div:first-child{flex:1;min-width:0;}
-  .entry .job.fit{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .entry .job.fit{display:flex;white-space:nowrap;overflow:hidden;min-width:0;}
+  .entry .lbl-h, .entry .lbl-t{flex:0 0 auto;white-space:pre;}
+  .entry .lbl-s{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .entry .meta{
     font-size:0.78rem;
     color:var(--muted);
@@ -2964,7 +2966,7 @@
       return `
       <div class="entry">
         <div>
-          <div class="job fit">${escapeHtml(t.person)} · ${escapeHtml(trimEntryDetailText(t))}</div>
+          <div class="job fit">${trimLogLabelHtml(t)}</div>
           ${h.active ? '' : `<div class="meta">${escapeHtml(h.name)}</div>`}
         </div>
         <div style="display:flex;align-items:center;">
@@ -3395,10 +3397,9 @@
   function renderHarvestEntries(h){
     const mgr = !!data.trimManagerEnabled;
     const rows = mgr
-      ? h.logs.map(t => ({id: t.id, date: t.date, label: t.person + ' · ' + trimEntryDetailText(t), grams: t.grams || 0, hours: t.hours || 0, crew: true}))
+      ? h.logs.map(t => ({id: t.id, date: t.date, label: trimLogLabelHtml(t), grams: t.grams || 0, hours: t.hours || 0, crew: true}))
       : data.entries.filter(e => e.harvestId === h.id).map(e => {
-          const catTags = categoryTagsText(e.categories);
-          const label = e.job + (e.strain ? ' · ' + e.strain : '') + (e.bbuds ? ' · B-Buds' : '') + (e.description ? ' · ' + e.description : '') + (catTags ? ' · ' + catTags : '');
+          const label = personalEntryLabelHtml(e);
           return {id: e.id, date: e.date, label, grams: e.grams || 0, hours: e.hours || 0, amount: e.amount || 0, crew: false};
         });
     el('hvTileEntriesN').textContent = String(rows.length);
@@ -3426,7 +3427,7 @@
             if(r.amount > 0) amt.push('$' + r.amount.toLocaleString());
             return `
             <div class="entry">
-              <div style="flex:1;min-width:0;"><div class="job fit">${escapeHtml(r.label)}</div></div>
+              <div style="flex:1;min-width:0;"><div class="job fit">${r.label}</div></div>
               <div style="display:flex;align-items:center;">
                 <div class="amounts">${gramsSpanHtml(amt.join(' / ') || '—')}</div>
                 <div class="actions">
@@ -4844,19 +4845,28 @@
   // Shrinks entry text a little (down to ~70%) so each row stays on one line
   // on narrow phones; anything still too long ends in an ellipsis. Only
   // measures rows that are on screen, so it re-runs when a page is shown.
-  function fitEntryText(){
-    document.querySelectorAll('.entry .job.fit').forEach(el => {
-      if(!el.offsetParent) return;
-      el.style.fontSize = '';
-      const base = parseFloat(getComputedStyle(el).fontSize);
-      const min = base * 0.7;
-      let size = base;
-      while(el.scrollWidth > el.clientWidth + 0.5 && size > min){
-        size -= 0.4;
-        el.style.fontSize = size + 'px';
-      }
-    });
+  // Entry labels keep one text size. When a row is too long, the strain (or
+  // description) is shortened with an ellipsis so the end — room, B-Buds —
+  // always stays visible.
+  function entryLabelHtml(head, mid, tail){
+    const tailText = tail.filter(Boolean).join(' · ');
+    const h = escapeHtml(head) + ((mid || tailText) ? ' · ' : '');
+    const m = mid ? `<span class="lbl-s">${escapeHtml(mid)}</span>` : '';
+    const t = tailText ? ((mid ? ' · ' : '') + escapeHtml(tailText)) : '';
+    return `<span class="lbl-h">${h}</span>${m}<span class="lbl-t">${t}</span>`;
   }
+  function trimLogLabelHtml(t){
+    return t.hours > 0
+      ? entryLabelHtml(t.person + ' · Hourly', t.note || '', [])
+      : entryLabelHtml(t.person, strainLabel(t.strain), [t.room, t.bbuds ? 'B-Buds' : '']);
+  }
+  function personalEntryLabelHtml(e){
+    const catTags = categoryTagsText(e.categories);
+    return e.strain
+      ? entryLabelHtml(e.job, e.strain, [e.bbuds ? 'B-Buds' : '', e.description, catTags])
+      : entryLabelHtml(e.job, e.description || '', [e.bbuds ? 'B-Buds' : '', catTags]);
+  }
+  function fitEntryText(){}
   window.addEventListener('resize', fitEntryText);
   window.addEventListener('orientationchange', fitEntryText);
 
@@ -4884,7 +4894,7 @@
         h.logs.forEach(t => {
           rows.push({
             id: t.id, date: t.date,
-            label: escapeHtml(t.person) + ' · ' + escapeHtml(trimEntryDetailText(t)),
+            label: trimLogLabelHtml(t),
             meta: h.active ? '' : h.name,
             grams: t.grams || 0, hours: t.hours || 0, amount: 0,
             edit: `TT.editTrimHarvestLog('${h.id}','${t.id}')`,
@@ -4896,8 +4906,7 @@
       rows = data.entries
         .filter(e => e.harvestId === active.id)
         .map(e => {
-          const catTags = categoryTagsText(e.categories);
-          const label = escapeHtml(e.job) + (e.strain ? ' · ' + escapeHtml(e.strain) : '') + (e.bbuds ? ' · B-Buds' : '') + (e.description ? ' · ' + escapeHtml(e.description) : '') + (catTags ? ' · ' + escapeHtml(catTags) : '');
+          const label = personalEntryLabelHtml(e);
           return {
             id: e.id, date: e.date, label, meta: '',
             grams: e.grams || 0, hours: e.hours || 0, amount: e.amount || 0,
