@@ -551,7 +551,13 @@
   }
   .card-header-row h2{margin:0;}
   .menu-wrap{position:relative;flex-shrink:0;}
-  #paymentCard, #estimatorCard{position:relative;}
+  #paymentCard{position:relative;}
+  #entriesCard, #entriesList{overflow-anchor:none;}
+  .stats + .stats{margin-top:12px;}
+  .inline-notice{background:var(--green-pale);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-top:12px;font-size:0.82rem;color:var(--text);cursor:pointer;text-align:center;}
+  .rate-disclaimer{background:var(--green-pale);border-radius:10px;padding:9px 12px;font-size:0.78rem;margin:10px 0 2px;color:var(--text);}
+  .rate-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .rate-summary span{font-size:0.9rem;}
   .card-menu{position:absolute;top:10px;right:12px;z-index:20;}
   .card-menu .menu-panel{min-width:250px;}
   .card-menu .toggle-line span{white-space:nowrap;}
@@ -844,6 +850,7 @@
   .settings-subsection{
     border-top:1px solid var(--border);
     margin-top:0;
+    margin-bottom:0;
     padding-top:0;
   }
   .settings-subsection:first-of-type{
@@ -856,8 +863,8 @@
     justify-content:center;
     align-items:center;
     text-align:center;
-    font-size:0.85rem;
-    padding:13px 0;
+    font-size:1rem;
+    padding:14px 0;
     position:relative;
   }
   .settings-subsection > summary:before,
@@ -896,7 +903,7 @@
   .settings-subsection[open] > summary{
     border-bottom:1px solid var(--border);
     margin-bottom:10px;
-    padding:13px 0;
+    padding:14px 0;
   }
   .settings-link{
     position:relative;
@@ -906,8 +913,8 @@
     text-align:center;
     border-top:1px solid var(--border);
     margin-top:0;
-    padding:13px 0;
-    font-size:0.85rem;
+    padding:14px 0;
+    font-size:1rem;
     font-weight:700;
     color:var(--green-dark);
     cursor:pointer;
@@ -1164,6 +1171,9 @@
   #entriesToggle{position:absolute;top:14px;right:12px;margin:0;width:auto;padding:2px;z-index:2;}
   #entriesToggle .pill-btn{flex:none;padding:4px 11px;font-size:0.7rem;line-height:1.2;}
 
+  #modeSegmented .seg-btn{font-size:1rem;font-weight:400;}
+  .settings-subsection > summary, .settings-link{font-weight:400;}
+
   /* Cards that are always open (no collapsing) */
   details.fixed-card > summary{cursor:default;}
   details.fixed-card > summary:before, details.fixed-card[open] > summary:before{content:none;}
@@ -1180,6 +1190,27 @@
   .help-body h4{margin:12px 0 4px;font-size:0.9rem;color:var(--green-dark);}
   .help-tag{font-size:0.68rem;font-weight:700;background:var(--green-tint);color:var(--green-dark);border-radius:999px;padding:2px 8px;}
   .help-empty{display:none;text-align:center;color:var(--muted);font-size:0.9rem;padding:14px 0;}
+  .ts-banner{display:none;position:sticky;top:0;z-index:60;background:var(--green-dark);color:#fff;text-align:center;font-size:0.8rem;font-weight:600;padding:7px 10px;cursor:pointer;}
+  #categoryMenuToggle.ts-dot{position:relative;}
+  #categoryMenuToggle.ts-dot::after{content:'';position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:#e0452c;}
+  .ts-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:8px;}
+  .ts-row.running{background:var(--green-pale);border-color:var(--green-light);}
+  .ts-who{flex:1;min-width:0;}
+  .ts-name{font-weight:700;color:var(--green-dark);font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ts-clock{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:1.75rem;font-weight:700;color:var(--green-dark);font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;}
+  .ts-row.running .ts-clock{color:var(--green-mid);}
+  .ts-zero{opacity:0.45;}
+  .ts-hrs{display:flex;align-items:center;gap:5px;font-size:1.6rem;font-weight:700;color:var(--green-dark);line-height:1;white-space:nowrap;}
+  .ts-hrs small{font-size:0.75rem;font-weight:600;color:var(--muted);}
+  .ts-tap{cursor:pointer;}
+  .ts-pen{font-size:0.95rem;color:var(--muted);}
+  .ts-edit{width:84px;text-align:right;font-size:1.4rem;font-weight:700;}
+  .ts-main{min-width:74px;padding:11px 0;font-size:0.95rem;border-radius:10px;background:var(--green-mid);color:#fff;margin:0;}
+  .ts-row.running .ts-main{background:#d9901c;}
+  .ts-jobline{margin-top:4px;}
+  .ts-jobline select{width:100%;font-size:0.78rem;padding:3px 6px;}
+  #tsJobMode{color:var(--green-dark);font-size:0.8rem;font-weight:700;margin:0;}
+  .ts-link{background:none;border:none;padding:0;margin-top:3px;color:var(--muted);font-weight:600;font-size:0.72rem;text-decoration:underline;cursor:pointer;font-family:inherit;}
   .report-overlay{
     display:none;
     position:fixed;
@@ -1371,6 +1402,7 @@
   </svg>
   <h1>Trim Tracker</h1>
 </header>
+<div class="ts-banner" id="tsBanner" role="button" tabindex="0"></div>
 
 <div class="wrap">
 
@@ -1383,6 +1415,10 @@
       <div class="menu-wrap">
         <button type="button" class="icon-btn menu-dots" id="categoryMenuToggle" title="Categories">⋮</button>
         <div class="menu-panel" id="categoryMenuPanel" style="display:none;">
+          <div id="tsMenuWrap" style="display:none;">
+            <button type="button" class="btn btn-secondary btn-small" id="tsOpenBtn" style="width:100%;">⏱ Time Sheet</button>
+            <div class="report-divider subtle" style="margin:8px 0;"></div>
+          </div>
           <div class="menu-panel-title">Show on form</div>
           <div class="meta" style="margin:0 0 8px;font-size:0.62rem;">Hiding doesn't affect past entries.</div>
           <div id="categoryMenuList"></div>
@@ -1423,6 +1459,10 @@
       <div id="jobField">
         <label>Job type</label>
         <select id="f-job"></select>
+        <div class="add-inline" id="jobAddInline" style="display:none;">
+          <input type="text" id="newJobInline" placeholder="New job type name">
+          <button type="button" class="btn btn-secondary" id="confirmJobAdd" style="width:auto;padding:10px 14px;">Add</button>
+        </div>
       </div>
 
       <div id="strainField">
@@ -1527,6 +1567,10 @@
 
       <label>Job type</label>
       <select id="tm-job"></select>
+      <div class="add-inline" id="tmJobAddInline" style="display:none;">
+        <input type="text" id="tmNewJobInline" placeholder="New job type name">
+        <button type="button" class="btn btn-secondary" id="tmConfirmJobAdd" style="width:auto;padding:10px 14px;">Add</button>
+      </div>
     </div>
 
     <button type="button" class="btn btn-primary" id="tmAddEntry" style="width:100%;margin-top:10px;">Add Entry</button>
@@ -1557,133 +1601,104 @@
 <div class="app-page" id="page-payments" data-page="payments" style="display:none;">
 
   <div class="pill-toggle" id="payToggle">
-    <button type="button" class="seg-btn pill-btn active" data-view="payment">Log a Payment</button>
-    <button type="button" class="seg-btn pill-btn" data-view="estimator">Estimator</button>
+    <button type="button" class="seg-btn pill-btn active" data-view="balance">Outstanding Balance</button>
+    <button type="button" class="seg-btn pill-btn" data-view="payment">Payments</button>
   </div>
 
-  <!-- Totals -->
-  <div class="card" id="totalsCard">
-    <h2>📊 Unpaid Totals</h2>
+  <!-- Outstanding Balance -->
+  <div class="card" id="balanceCard">
+    <h2>📊 Outstanding Balance</h2>
     <div class="stats">
       <div class="stat stat-toggle" id="totalWeightStat" role="button" tabindex="0" title="Tap to switch between pounds and grams">
         <span class="unit-badge is-g" id="totalUnitBadge" aria-hidden="true">g</span>
         <div class="num" id="totalGrams">0 lb</div>
-        <div class="lbl" id="totalGramsLbl">Pounds</div>
+        <div class="lbl" id="totalGramsLbl">Pounds Owed</div>
       </div>
       <div class="stat">
         <div class="num" id="totalHours">0</div>
-        <div class="lbl">Hours</div>
+        <div class="lbl">Hours Owed</div>
       </div>
     </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="num" id="balanceOwed">$0.00</div>
+        <div class="lbl">Total Owed</div>
+      </div>
+    </div>
+    <div class="inline-notice" id="balanceNoRate" role="button" tabindex="0" style="display:none;">Add your pay rates to see dollars. Tap to set them in Payments.</div>
+    <div class="report-divider subtle"></div>
+    <div class="stats">
+      <div class="stat">
+        <div class="num" id="earnedValue">$0.00</div>
+        <div class="lbl" id="earnedLbl">Earned Today</div>
+      </div>
+    </div>
+    <label>Day</label>
+    <input type="date" id="est-day">
   </div>
 
   <!-- Payments -->
-  <details class="card fixed-card" open id="paymentCard">
-    <summary>💰 Log a Payment</summary>
-    <div class="menu-wrap card-menu">
-      <button type="button" class="icon-btn menu-dots" id="payMenuToggle" title="Pay options">⋮</button>
-      <div class="menu-panel" id="payMenuPanel" style="display:none;">
-        <div class="menu-panel-title">Pay options</div>
-        <label class="toggle-line"><input type="checkbox" id="splitBbudRate"><span>Different rate for B-Buds</span></label>
-        <label class="toggle-line"><input type="checkbox" id="splitHourlyRates"><span>Different rate per hourly job type</span></label>
+  <div id="paymentsView" style="display:none;">
+    <div class="card" id="owedCard">
+      <div class="stats">
+        <div class="stat">
+          <div class="num" id="owedTotal">$0.00</div>
+          <div class="lbl">Total Balance Owed</div>
+        </div>
       </div>
     </div>
-    <form id="paymentForm">
-      <label>Date</label>
-      <input type="date" id="p-date" required>
 
-      <label>Amount paid ($)</label>
-      <input type="number" id="p-amount-paid" step="any" min="0" required>
-
-      <div class="row2" style="margin-top:10px;">
-        <div>
-          <label>Rate per lb ($)</label>
-          <input type="number" id="p-rate-lb" step="any" min="0">
+    <div class="card" id="ratesCard">
+      <h2>💲 Pay Rates</h2>
+      <div class="rate-summary" id="rateSummary">
+        <span id="rateText">No rates set</span>
+        <button type="button" class="btn btn-secondary btn-small" id="rateChange">Set Pay Rates</button>
+      </div>
+      <div id="rateEditor" style="display:none;">
+        <div class="rate-disclaimer" id="rateDisclaimer">Changing your rates won't change payments you've already logged. New rates apply to future payments and to your unpaid balance.</div>
+        <div class="row2">
+          <div>
+            <label>Rate per lb ($)</label>
+            <input type="number" id="pr-lb" step="any" min="0">
+          </div>
+          <div>
+            <label id="prHrLabel">Rate per hour ($)</label>
+            <input type="number" id="pr-hr" step="any" min="0">
+          </div>
         </div>
-        <div id="hourlyRateSimple">
-          <label id="pRateHrLabel">Rate per hour ($)</label>
-          <input type="number" id="p-rate-hr" step="any" min="0">
+        <label class="toggle-line" style="margin-top:10px;"><input type="checkbox" id="pr-bb-on"><span>Different rate for B-Buds</span></label>
+        <div id="prBbWrap" style="display:none;">
+          <label>B-Buds rate per lb ($)</label>
+          <input type="number" id="pr-bb" step="any" min="0">
+        </div>
+        <label class="toggle-line" style="margin-top:6px;"><input type="checkbox" id="pr-hj-on"><span>Different rate per hourly job type</span></label>
+        <div id="prHourlySplit" style="display:none;"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button type="button" class="btn btn-primary" id="rateSave" style="flex:1;margin-top:0;">Save</button>
+          <button type="button" class="btn btn-secondary" id="rateCancel" style="flex:1;margin-top:0;">Cancel</button>
         </div>
       </div>
+    </div>
 
-      <div id="bbudRateWrap" style="display:none;margin-top:4px;">
-        <label>B-Buds rate per lb ($)</label>
-        <input type="number" id="p-rate-bb" step="any" min="0">
-      </div>
+    <details class="card fixed-card" open id="paymentCard">
+      <summary>💰 Log a Payment</summary>
+      <form id="paymentForm">
+        <label>Date</label>
+        <input type="date" id="p-date" required>
 
-      <div id="hourlyRateSplit" style="display:none;"></div>
+        <label>Amount paid ($)</label>
+        <input type="number" id="p-amount-paid" step="any" min="0" required>
 
-      <button type="submit" class="btn btn-primary" id="paymentSubmitBtn" style="margin-top:12px;">Log Payment</button>
-      <p style="font-size:0.75rem;color:var(--muted);margin:8px 0 0;">This will automatically pay down your oldest unpaid work first and mark anything only partially covered.</p>
-    </form>
+        <button type="submit" class="btn btn-primary" id="paymentSubmitBtn" style="margin-top:12px;">Log Payment</button>
+        <p style="font-size:0.75rem;color:var(--muted);margin:8px 0 0;">Uses your saved pay rates. This will automatically pay down your oldest unpaid work first and mark anything only partially covered.</p>
+      </form>
 
     <details id="paymentHistorySection" open style="margin-top:16px;">
       <summary>Payment History</summary>
       <div id="paymentsList"></div>
     </details>
-  </details>
-
-  <!-- Payment Estimator -->
-  <details class="card fixed-card" open id="estimatorCard">
-    <summary>🧮 Payment Estimator</summary>
-    <div class="menu-wrap card-menu">
-      <button type="button" class="icon-btn menu-dots" id="estMenuToggle" title="Pay options">⋮</button>
-      <div class="menu-panel" id="estMenuPanel" style="display:none;">
-        <div class="menu-panel-title">Pay options</div>
-        <label class="toggle-line"><input type="checkbox" id="est-split-bb"><span>Different rate for B-Buds</span></label>
-        <label class="toggle-line"><input type="checkbox" id="est-split-hourly"><span>Different rate per hourly job type</span></label>
-      </div>
-    </div>
-    <div class="row2">
-      <div>
-        <label>Rate per lb ($)</label>
-        <input type="number" id="est-rate-lb" step="any" min="0">
-      </div>
-      <div id="estHourlySimpleRate">
-        <label id="estRateHourLabel">Rate per hour ($)</label>
-        <input type="number" id="est-rate-hour" step="any" min="0">
-      </div>
-    </div>
-
-    <div id="estBbWrap" style="display:none;margin-top:8px;">
-      <div class="row2">
-        <div>
-          <label>B-Buds rate per lb ($)</label>
-          <input type="number" id="est-rate-bb" step="any" min="0">
-        </div>
-        <div>
-          <label>B-Buds grams</label>
-          <input type="number" id="est-grams-bb" step="any" min="0">
-        </div>
-      </div>
-    </div>
-
-    <div id="estHourlySplit" style="display:none;"></div>
-
-    <div class="row2" style="margin-top:12px;">
-      <div>
-        <label>Grams</label>
-        <input type="number" id="est-grams" step="any" min="0">
-      </div>
-      <div id="estHoursSimple">
-        <label>Hours</label>
-        <input type="number" id="est-hours" step="any" min="0">
-      </div>
-    </div>
-
-    <button class="btn btn-secondary" id="calcEstimate" style="width:100%;margin-top:12px;">Calculate Estimate</button>
-    <div id="estimateResult" class="estimate-result" style="display:none;"></div>
-
-    <div class="report-divider"></div>
-
-    <label>Custom day</label>
-    <input type="date" id="est-day">
-    <button class="btn btn-secondary" id="calcDayEarnings" style="width:100%;margin-top:8px;">Calculate for Custom Day</button>
-    <div id="dayEarningsResult" class="estimate-result" style="display:none;"></div>
-
-    <button class="btn btn-primary" id="calcTodayEarnings" style="width:100%;margin-top:8px;">Calculate Today's Earnings</button>
-    <div id="todayEarningsResult" class="estimate-result" style="display:none;"></div>
-  </details>
+    </details>
+  </div>
 
 </div><!-- /page-payments -->
 
@@ -1794,7 +1809,7 @@
 <div class="app-page" id="page-harvests" data-page="harvests" style="display:none;">
 
   <div id="harvestListView">
-    <div class="hv-head">🌾 Harvests</div>
+    <div class="hv-head">✂️ Harvests</div>
     <div id="harvestReviewBox" style="display:none;"></div>
     <div id="tmHarvestArchivesList"></div>
     <button type="button" class="hv-new" id="tmArchiveHarvest">➕ New harvest</button>
@@ -2013,14 +2028,14 @@
       <div id="helpTopics">
 
         <details class="help-topic"><summary>1. Getting started</summary><div class="help-body"><p>Trim Tracker records your work, tracks what you are owed, and produces reports. Data stays on this device. Use the tabs along the bottom: Home (add entries), Payments, Reports, Harvests, and Settings.</p></div></details>
-        <details class="help-topic"><summary>2. Adding entries</summary><div class="help-body"><p>On Home, Add Entry records each job by weight (grams), hours, or expense. Each entry goes to the active harvest (★); choosing another asks first and makes it active. Edit or delete an entry from the Past Entries list on Home.</p><p><strong>B-Buds</strong> (beside the strain) counts a weight separately from the strain's normal weight. Reports list normal weights and B-Buds separately, each with a total, then a combined total. <strong>Room</strong> records where the work was done.</p><p>Turn either off in the ⋮ menu on Add Entry. This only hides it on the form; nothing already recorded is changed or deleted.</p></div></details>
+        <details class="help-topic"><summary>2. Adding entries</summary><div class="help-body"><p>On Home, Add Entry records each job by weight (grams), hours, or expense. Each entry goes to the active harvest (★); choosing another asks first and makes it active. Hours are rounded up to the next 0.01 hour, including timer results. Pick "+ Add Job Type" in the Job type list to create one on the spot.</p><p>Past Entries on Home lists the last 7 work days of the active harvest; Show more lists every entry in that harvest. Edit or delete an entry from there.</p><p><strong>B-Buds</strong> (beside the strain) counts a weight separately from the strain's normal weight. Reports list normal weights and B-Buds separately, each with a total, then a combined total. <strong>Room</strong> records where the work was done.</p><p>Turn either off in the ⋮ menu on Add Entry. This only hides it on the form; nothing already recorded is changed or deleted.</p></div></details>
         <details class="help-topic"><summary>3. Harvests</summary><div class="help-body"><p>A harvest groups related entries; one is active at a time. The Harvests tab shows each as a card with notes, strain inventories (entered in pounds, shown in pounds and grams), entries, and reports.</p><p>Marking a harvest complete is only a label; you can still edit it. Deleting a harvest moves its entries, notes, and inventories to a harvest you choose.</p></div></details>
-        <details class="help-topic"><summary>4. Payments</summary><div class="help-body"><p>Log a Payment applies the amount to your unpaid work, oldest first, regardless of job type. The Payment Estimator shows what unpaid work is worth at the rates you enter, without recording anything.</p><p>The ⋮ menu on each adds a separate B-Buds rate and separate hourly rates per job.</p></div></details>
+        <details class="help-topic"><summary>4. Payments</summary><div class="help-body"><p>Outstanding Balance shows what you're owed (weight, hours, and dollars) and what you earned today or on any day you pick. Payments is where you set your Pay Rates and log a payment, which is applied to your unpaid work oldest first, regardless of job type.</p><p>Tap the pounds figure on Outstanding Balance to switch between pounds and grams. Until rates are set, dollar figures read "No rates yet".</p><p>Pay Rates are set in one place, including an optional separate B-Buds rate and separate hourly rates per job. Changing them never changes payments you already logged.</p></div></details>
         <details class="help-topic"><summary>5. Reports</summary><div class="help-body"><p>The Reports tab offers Entries, Financial, and Unpaid reports for today, a day, a date range, or all time, optionally for a single harvest. Each harvest also has its own Reports page. Use Save as Image to keep a report; the camera button on a section saves only that section.</p></div></details>
-        <details class="help-topic"><summary>6. Manager mode</summary><div class="help-body"><p>For supervising a team. Switch it on under App mode in Settings. Add Entry then has a Who selector to log weights and hours for yourself or your team, and Reports adds Team Reports (full log, by person, by strain). Switching back to Personal mode deletes nothing.</p></div></details>
+        <details class="help-topic"><summary>6. Manager mode</summary><div class="help-body"><p>For supervising a team. Switch it on under App mode in Settings. Add Entry then has a Who selector to log weights and hours for yourself or your team, and Reports adds Team Reports (full log, by person, by strain). Past Entries gets a Personal and Team switch. Switching back to Personal mode deletes nothing.</p><p><strong>Time Sheet:</strong> open the ⋮ menu on Add Entry and choose Time Sheet. Each person (including you) has a Start/Stop timer, and you can set one job type for everyone or choose Set individually. After stopping, tap a person's hours to correct them. Nothing is logged until you tap Submit Time Sheet, which saves each person's time (rounded up to 0.01 hour) to the active harvest. Clear Sheet discards it. While a sheet is in progress, a banner under the header reopens it.</p></div></details>
         <details class="help-topic"><summary>7. Settings</summary><div class="help-body"><p>Manage your strains, job types, and rooms (alphabetical unless rearranged), and the color scheme. Pound Weight sets grams per pound (default 454, range 400–500); changing it updates every pound figure, including past reports, but never your logged grams.</p></div></details>
         <details class="help-topic"><summary>8. Backup and restore</summary><div class="help-body"><p>Data is stored only on this device, so download a backup regularly. Restore from Backup replaces all current data. Clear All Data in the Danger Zone cannot be undone.</p></div></details>
-        <details class="help-topic"><summary>9. Common questions</summary><div class="help-body"><h4>Did hiding B-Buds or Room delete anything?</h4><p>No. It only hides the option on the form.</p><h4>Why did a pound figure change?</h4><p>Check Pound Weight in Settings.</p><h4>How do I move to another device?</h4><p>Download a backup, then restore it on the new device.</p></div></details>
+        <details class="help-topic"><summary>9. Common questions</summary><div class="help-body"><h4>Did hiding B-Buds or Room delete anything?</h4><p>No. It only hides the option on the form.</p><h4>Why do my dollar figures say "No rates yet"?</h4><p>Set your Pay Rates on the Payments side first.</p><h4>I started a time sheet and changed my mind.</h4><p>Open it and tap Clear Sheet.</p><h4>Why did a pound figure change?</h4><p>Check Pound Weight in Settings.</p><h4>How do I move to another device?</h4><p>Download a backup, then restore it on the new device.</p></div></details>
 
       </div>
       <div class="help-empty" id="helpEmpty">No help topics match your search.</div>
@@ -2057,7 +2072,7 @@
     <span class="nav-icon">📤</span><span class="nav-label">Reports</span>
   </button>
   <button type="button" class="nav-btn" data-page="harvests">
-    <span class="nav-icon">🌾</span><span class="nav-label">Harvests</span>
+    <span class="nav-icon">✂️</span><span class="nav-label">Harvests</span>
   </button>
   <button type="button" class="nav-btn" data-page="settings">
     <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
@@ -2085,6 +2100,29 @@
     <button type="button" class="btn btn-primary" id="blurPdf" style="width:100%;margin-top:0;">📄 Save as PDF instead</button>
     <button type="button" class="btn btn-secondary" id="blurContinue" style="width:100%;margin-top:8px;">Continue with blurry image</button>
     <button type="button" class="btn btn-ghost" id="blurCancel" style="width:100%;margin-top:8px;">Cancel</button>
+  </div>
+</div>
+
+<div id="tsOverlay" class="report-overlay">
+  <div class="report-sheet">
+    <div class="report-topbar">
+      <div class="report-title" style="font-size:1.15rem;align-self:center;">⏱ Time Sheet</div>
+      <button class="btn btn-ghost btn-small" id="tsClose">✕ Close</button>
+    </div>
+    <label>Date</label>
+    <input type="date" id="tsDate">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;"><label id="tsJobLabel" style="margin-bottom:0;">Job type (everyone)</label><button type="button" class="ts-link" id="tsJobMode">Set individually</button></div>
+    <select id="tsJob"></select>
+    <div style="height:10px;"></div>
+    <div id="tsList"></div>
+    <label>Add team member</label>
+    <div class="add-inline">
+      <input type="text" id="tsNewPerson" placeholder="New team member name">
+      <button type="button" class="btn btn-secondary" id="tsAddPerson" style="width:auto;padding:10px 14px;">Add</button>
+    </div>
+    <button type="button" class="btn btn-primary" id="tsSubmit" style="margin-top:16px;">Submit Time Sheet</button>
+    <button type="button" class="btn btn-ghost" id="tsClear" style="width:100%;margin-top:8px;">Clear Sheet</button>
+    <p style="font-size:0.75rem;color:var(--muted);margin:8px 0 0;">Nothing is logged until you submit. Each person's time is rounded up to the next 0.01 hour and saved to the active harvest. You can edit entries afterward like any other.</p>
   </div>
 </div>
 
@@ -2220,6 +2258,7 @@
   function normalizeData(parsed){
     if(!parsed || !parsed.strains || !parsed.jobTypes || !parsed.entries) return null;
     if(!parsed.payments) parsed.payments = [];
+    if(!parsed.timesheet || typeof parsed.timesheet.rows !== 'object') parsed.timesheet = {rows: {}, date: ''};
     if(!parsed.estimator) parsed.estimator = {ratePerLb: 0, ratePerHour: 0};
     if(parsed.estimator.ratePerLb === undefined) parsed.estimator.ratePerLb = parsed.estimator.ratePerGram || 0;
     if(parsed.estimator.ratePerBb === undefined) parsed.estimator.ratePerBb = 0;
@@ -2515,7 +2554,8 @@
     if(current && !names.includes(current) && data.jobTypes.some(j => j.name === current && j.kind === kind)){
       names = names.concat(current);
     }
-    sel.innerHTML = names.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    sel.innerHTML = names.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('')
+      + `<option value="__add__">+ Add Job Type</option>`;
     if(current && names.includes(current)) sel.value = current;
     else if(names.includes('Trimming')) sel.value = 'Trimming';
     else sel.value = names[0] || '';
@@ -2545,7 +2585,8 @@
     const current = ensureValue || sel.value;
     let names = data.jobTypes.filter(j => j.active && j.kind === 'hourly').map(j => j.name);
     if(current && !names.includes(current)) names = names.concat(current);
-    sel.innerHTML = names.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    sel.innerHTML = names.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('')
+      + `<option value="__add__">+ Add Job Type</option>`;
     sel.value = current && names.includes(current) ? current : (names[0] || '');
   }
 
@@ -2731,17 +2772,17 @@
       : 'Personal mode: just your own work, entries and payments.';
   }
 
-  // Payments (Log a Payment | Estimator) and Reports (Personal | Crew) show one
+  // Payments (Outstanding Balance | Payments) and Reports (Personal | Crew) show one
   // card at a time. The pick lasts for the session only; reopening the app
   // starts on the left side again.
-  let payView = 'payment';
+  let payView = 'balance';
   let repView = 'personal';
   function applyCardToggles(){
     const mgr = !!data.trimManagerEnabled;
     if(!mgr) repView = 'personal';
     document.querySelectorAll('#payToggle .pill-btn').forEach(b => b.classList.toggle('active', b.dataset.view === payView));
-    el('paymentCard').style.display = payView === 'payment' ? '' : 'none';
-    el('estimatorCard').style.display = payView === 'estimator' ? '' : 'none';
+    el('balanceCard').style.display = payView === 'balance' ? '' : 'none';
+    el('paymentsView').style.display = payView === 'payment' ? '' : 'none';
     el('reportToggle').style.display = mgr ? 'flex' : 'none';
     document.querySelectorAll('#reportToggle .pill-btn').forEach(b => b.classList.toggle('active', b.dataset.view === repView));
     el('reportCard').style.display = repView === 'personal' ? '' : 'none';
@@ -2768,6 +2809,8 @@
     applyCardToggles();
     renderEntries();
     el('managerSettingsBody').style.display = on ? 'block' : 'none';
+    el('tsMenuWrap').style.display = on ? 'block' : 'none';
+    tsUpdateBanner();
     updateWhoView();
   }
 
@@ -3003,8 +3046,9 @@
       if(room === '__add__'){ alert('Finish adding the new room, or leave the room blank.'); return; }
       if(grams <= 0){ alert('Enter a weight for this entry.'); return; }
     } else {
-      hours = parseFloat(el('tm-hours').value) || 0;
+      hours = Math.ceil((parseFloat(el('tm-hours').value) || 0) * 100 - 1e-9) / 100;
       note = el('tm-job').value;
+      if(note === '__add__'){ alert('Finish adding the new job type, or pick one from the list.'); return; }
       if(!note){ alert('Add an hourly (by hours) job type in Settings first.'); return; }
       if(hours <= 0){ alert('Enter hours for this entry.'); return; }
     }
@@ -3091,8 +3135,15 @@
   // includeAll = report filter (also lists removed harvests, so past
   // reports stay reachable). Otherwise removed harvests are hidden except
   // keepId (the harvest an entry being edited already belongs to).
+  // Harvest dropdowns: the active harvest first, then newest to oldest.
+  function harvestDropdownOrder(a, b){
+    return (b.active ? 1 : 0) - (a.active ? 1 : 0)
+      || String(b.createdAt).localeCompare(String(a.createdAt))
+      || String(b.id).localeCompare(String(a.id));
+  }
+
   function harvestOptionsHtml(includeAll, keepId, hideAllOption){
-    const sorted = data.trimHarvests.filter(h => includeAll || !h.deleted || h.id === keepId).sort((a,b) => (b.active?1:0)-(a.active?1:0) || a.name.localeCompare(b.name));
+    const sorted = data.trimHarvests.filter(h => includeAll || !h.deleted || h.id === keepId).sort(harvestDropdownOrder);
     return (includeAll && !hideAllOption ? '<option value="all">All harvests</option>' : '') +
       sorted.map(h => `<option value="${h.id}">${h.active ? '★ ' : ''}${escapeHtml(h.name)}${h.deleted ? ' (removed)' : ''}</option>`).join('');
   }
@@ -3742,13 +3793,13 @@
       logs = activeLogs.slice();
       if(from) logs = logs.filter(t => t.date >= from);
       if(to) logs = logs.filter(t => t.date <= to);
-      subtitle = (from || to) ? `${from ? fmtDate(from) : 'Start'} – ${to ? fmtDate(to) : 'Now'}` : 'All entries';
+      subtitle = (from || to) ? `${from ? fmtDate(from) : 'Start'} – ${to ? fmtDate(to) : 'Now'}` : '';
     } else if(trimReportScope === 'all'){
       logs = activeLogs.slice();
-      subtitle = 'All entries';
+      subtitle = '';
     }
     logs = logs.slice().sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
-    subtitle = subtitle + ' · ' + (pickedHarvest ? pickedHarvest.name : 'All harvests');
+    subtitle = (subtitle ? subtitle + ' · ' : '') + (pickedHarvest ? pickedHarvest.name : 'All harvests');
     return {logs, subtitle};
   }
 
@@ -4028,20 +4079,6 @@
     e.stopPropagation();
     const panel = el('categoryMenuPanel');
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-  });
-
-  ['pay', 'est'].forEach(prefix => {
-    el(prefix + 'MenuToggle').addEventListener('click', function(e){
-      e.stopPropagation();
-      const panel = el(prefix + 'MenuPanel');
-      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    });
-    document.addEventListener('click', function(e){
-      const panel = el(prefix + 'MenuPanel');
-      if(panel.style.display !== 'none' && !panel.contains(e.target) && e.target !== el(prefix + 'MenuToggle')){
-        panel.style.display = 'none';
-      }
-    });
   });
 
   document.addEventListener('click', function(e){
@@ -4347,7 +4384,63 @@
   }
 
   // ---- Form handling ----
-  el('f-job').addEventListener('change', updateFieldVisibility);
+  el('f-job').addEventListener('change', function(){
+    if(this.value === '__add__'){
+      el('jobAddInline').style.display = 'flex';
+      el('newJobInline').value = '';
+      el('newJobInline').focus();
+    } else {
+      el('jobAddInline').style.display = 'none';
+    }
+    updateFieldVisibility();
+  });
+
+  // Adds (or revives) a job type of the given kind, then reselects it.
+  function addJobTypeInline(name, kind){
+    name = name.trim();
+    if(!name) return null;
+    const existing = data.jobTypes.find(j => j.name === name);
+    if(!existing){ data.jobTypes.push({name, kind, active: true}); autoSortList(data, 'jobTypes'); }
+    else if(!existing.active || existing.deleted){ existing.active = true; delete existing.deleted; }
+    save();
+    renderJobTypes();
+    refreshRateEditorSplit();
+    return (existing && existing.kind !== kind) ? null : name;
+  }
+
+  function confirmNewJob(){
+    const name = el('newJobInline').value.trim();
+    el('jobAddInline').style.display = 'none';
+    el('newJobInline').value = '';
+    const added = name ? addJobTypeInline(name, F_KIND_FOR_TYPE[fEntryType]) : null;
+    populateJobSelect(added || undefined);
+    if(name && !added) alert('A job type named "' + name + '" already exists with a different pay type.');
+  }
+  el('confirmJobAdd').addEventListener('click', confirmNewJob);
+  el('newJobInline').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); confirmNewJob(); }
+  });
+
+  el('tm-job').addEventListener('change', function(){
+    el('tmJobAddInline').style.display = this.value === '__add__' ? 'flex' : 'none';
+    if(this.value === '__add__'){
+      el('tmNewJobInline').value = '';
+      el('tmNewJobInline').focus();
+    }
+  });
+  function confirmNewTrimJob(){
+    const name = el('tmNewJobInline').value.trim();
+    el('tmJobAddInline').style.display = 'none';
+    el('tmNewJobInline').value = '';
+    const added = name ? addJobTypeInline(name, 'hourly') : null;
+    populateJobSelect();
+    populateTrimJobSelect(added || undefined);
+    if(name && !added) alert('A job type named "' + name + '" already exists with a different pay type.');
+  }
+  el('tmConfirmJobAdd').addEventListener('click', confirmNewTrimJob);
+  el('tmNewJobInline').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); confirmNewTrimJob(); }
+  });
 
   el('f-strain').addEventListener('change', function(){
     if(this.value === '__add__'){
@@ -4394,67 +4487,27 @@
     return names;
   }
 
-  let paymentSplitJobs = [];
-
-  // Lets a payment specify a different $/hr rate per active hourly job
-  // type (e.g. Retrim $20/hr, Bucking $30/hr) instead of one shared rate.
-  function renderHourlyRateSplit(){
-    // Sort only the display order — idx below must stay the item's real
-    // index in the unsorted data.jobTypes array, since it's reused as the
-    // stable DOM id suffix (p-rate-hr-${idx}) the submit handler looks up.
-    paymentSplitJobs = hourlyJobNamesForRates();
-    el('hourlyRateSplit').innerHTML = paymentSplitJobs.map((name, idx) => {
-      return `
-        <div style="margin-top:8px;">
-          <label>${escapeHtml(name)} rate per hour ($)</label>
-          <input type="number" id="p-rate-hr-${idx}" step="any" min="0" placeholder="Default rate">
-        </div>`;
-    }).join('') || '<p style="font-size:0.8rem;color:var(--muted);margin:8px 0 0;">No active hourly job types yet.</p>';
-  }
-
-  el('splitHourlyRates').addEventListener('change', function(){
-    const on = this.checked;
-    // The normal hourly rate stays visible; with the split on it becomes the
-    // default for any job type left blank.
-    el('pRateHrLabel').textContent = on ? 'Default rate per hour ($)' : 'Rate per hour ($)';
-    el('hourlyRateSplit').style.display = on ? 'block' : 'none';
-    if(on) renderHourlyRateSplit();
-  });
-
-  el('splitBbudRate').addEventListener('change', function(){
-    el('bbudRateWrap').style.display = this.checked ? 'block' : 'none';
-  });
-
   el('paymentForm').addEventListener('submit', function(e){
     e.preventDefault();
     const dateVal = el('p-date').value || todayStr();
     const amountPaid = parseFloat(el('p-amount-paid').value) || 0;
-    const rateLb = parseFloat(el('p-rate-lb').value) || 0;
-    const rateBb = el('splitBbudRate').checked ? (parseFloat(el('p-rate-bb').value) || 0) : 0;
-
-    const splitOn = el('splitHourlyRates').checked;
-    const hourlyRates = {};
-    const defaultRateHr = parseFloat(el('p-rate-hr').value) || 0;
-    if(splitOn){
-      // A job left blank gets the default hourly rate.
-      paymentSplitJobs.forEach((name, idx) => {
-        const input = el('p-rate-hr-' + idx);
-        const rate = (input ? (parseFloat(input.value) || 0) : 0) || defaultRateHr;
-        if(rate > 0) hourlyRates[name] = rate;
-      });
-    } else if(defaultRateHr > 0){
-      hourlyJobNamesForRates().forEach(name => { hourlyRates[name] = defaultRateHr; });
-    }
-    const hasHourlyRate = Object.keys(hourlyRates).length > 0;
-
     if(amountPaid <= 0){
       alert('Enter a payment amount greater than 0.');
       return;
     }
-    if(rateLb <= 0 && rateBb <= 0 && !hasHourlyRate){
-      alert('Enter a rate per pound and/or per hour so the payment can be allocated.');
+    const R = payRates();
+    if(!ratesAvailable(R)){
+      alert('Set your pay rates first so the payment can be allocated.');
+      openRateEditor();
       return;
     }
+    const rateLb = R.lb;
+    const rateBb = R.bb > 0 ? R.bb : 0;
+    const hourlyRates = {};
+    hourlyJobNamesForRates().forEach(name => {
+      const r = hourlyRateFor(name, R);
+      if(r > 0) hourlyRates[name] = r;
+    });
 
     const result = allocatePayment(amountPaid, rateLb, hourlyRates, rateBb);
 
@@ -4479,17 +4532,13 @@
     renderTotals();
     el('paymentForm').reset();
     el('p-date').value = todayStr();
-    el('splitBbudRate').checked = false;
-    el('bbudRateWrap').style.display = 'none';
-    el('splitHourlyRates').checked = false;
-    el('pRateHrLabel').textContent = 'Rate per hour ($)';
-    el('hourlyRateSplit').style.display = 'none';
   });
 
   el('entryForm').addEventListener('submit', function(e){
     e.preventDefault();
     const job = el('f-job').value;
     const kind = F_KIND_FOR_TYPE[fEntryType];
+    if(job === '__add__' && kind !== 'piece'){ alert('Finish adding the new job type, or pick one from the list.'); return; }
     const dateVal = el('f-date').value || todayStr();
     if(!job){
       alert(kind === 'hourly' ? 'Add an hourly (by hours) job type in Settings first.' : 'Add a by-grams job type in Settings first.');
@@ -4501,7 +4550,7 @@
     const editingEntryNow = editingId ? data.entries.find(e2 => e2.id === editingId) : null;
     const strain = kind === 'piece' ? (el('f-strain').value || '') : (kind === 'hourly' && editingEntryNow ? (editingEntryNow.strain || '') : '');
     const bbuds = kind === 'piece' && getBbuds('f-bbuds');
-    const hours = kind === 'hourly' ? (data.activeTimer ? currentTimerElapsedMs() / 3600000 : (parseFloat(el('f-hours').value) || 0)) : 0;
+    const hours = kind === 'hourly' ? (data.activeTimer ? Math.ceil(currentTimerElapsedMs() / 3600000 * 100 - 1e-9) / 100 : Math.ceil((parseFloat(el('f-hours').value) || 0) * 100 - 1e-9) / 100) : 0;
     const amount = kind === 'expense' ? (parseFloat(el('f-amount').value) || 0) : 0;
     const description = kind === 'expense' ? (el('f-description').value || '') : '';
     const categories = currentCategoryValues();
@@ -4643,7 +4692,7 @@
     el('totalGrams').textContent = inLb
       ? roundNum(lastUnpaidGrams / GRAMS_PER_LB, 2).toLocaleString() + ' lb'
       : lastUnpaidGrams.toLocaleString() + 'g';
-    el('totalGramsLbl').textContent = inLb ? 'Pounds' : 'Grams';
+    el('totalGramsLbl').textContent = inLb ? 'Pounds Owed' : 'Grams Owed';
     el('totalUnitBadge').textContent = inLb ? 'g' : 'lb';
     el('totalUnitBadge').classList.toggle('is-g', inLb);
   }
@@ -4664,11 +4713,7 @@
     lastUnpaidGrams = unpaidGrams;
     renderTotalsWeight();
     el('totalHours').textContent = unpaidHours.toLocaleString();
-    // Keep the Payment Estimator's prefilled Grams/Hours in sync with the
-    // live unpaid balance — previously this only ran once on page load,
-    // so it went stale the moment you added/edited/deleted an entry or
-    // payment without refreshing the page.
-    prefillEstimatorAmounts();
+    renderBalance();
   }
 
   // Weight is tracked per strain, and B-Buds are their own bucket per strain
@@ -4835,8 +4880,7 @@
     let rows;
     if(entriesView === 'crew'){
       rows = [];
-      data.trimHarvests.filter(h => !h.deleted).forEach(h => {
-        if(entriesExpanded && h.id !== active.id) return;
+      data.trimHarvests.filter(h => !h.deleted && h.id === active.id).forEach(h => {
         h.logs.forEach(t => {
           rows.push({
             id: t.id, date: t.date,
@@ -4850,7 +4894,7 @@
       });
     } else {
       rows = data.entries
-        .filter(e => !entriesExpanded || e.harvestId === active.id)
+        .filter(e => e.harvestId === active.id)
         .map(e => {
           const catTags = categoryTagsText(e.categories);
           const label = escapeHtml(e.job) + (e.strain ? ' · ' + escapeHtml(e.strain) : '') + (e.bbuds ? ' · B-Buds' : '') + (e.description ? ' · ' + escapeHtml(e.description) : '') + (catTags ? ' · ' + escapeHtml(catTags) : '');
@@ -4868,11 +4912,10 @@
     // Collapsed: only the 7 most recent days that have entries.
     if(!entriesExpanded) dates = dates.slice(0, 7);
 
-    const heading = entriesExpanded ? `<div class="meta" style="margin-bottom:6px;">All entries · ${escapeHtml(active.name)}</div>` : '';
+    const heading = '';
     if(dates.length === 0){
       let message;
-      if(entriesExpanded) message = 'No entries in this harvest yet.';
-      else if(data.entries.length === 0 && !data.trimHarvests.some(h => h.logs.length)) message = 'No entries yet. Add your first one above 🌱';
+      if(data.entries.length === 0 && !data.trimHarvests.some(h => h.logs.length)) message = 'No entries yet. Add your first one above 🌱';
       else message = 'No entries yet.';
       container.innerHTML = heading + `<div class="empty">${message}</div>`;
       return;
@@ -4929,8 +4972,12 @@
   });
   el('entriesCard').addEventListener('toggle', fitEntryText);
   el('entriesMore').addEventListener('click', function(){
+    // Expand or collapse in place: the rows already on screen stay put and
+    // the page doesn't scroll.
+    const y = window.scrollY;
     entriesExpanded = !entriesExpanded;
     renderEntries();
+    window.scrollTo(0, y);
   });
 
   function computeBalance(){
@@ -5368,7 +5415,7 @@
     save();
     renderJobTypes();
     populateJobSelect();
-    if(el('splitHourlyRates').checked) renderHourlyRateSplit();
+    refreshRateEditorSplit();
   });
 
   el('resetAll').addEventListener('click', function(){
@@ -5436,7 +5483,7 @@
     el('moveHarvestText').textContent = `It has ${parts.join(' and ')}. Deleting a harvest never deletes entries, notes or inventories — choose the harvest to move them to:`;
     el('moveHarvestTarget').innerHTML = data.trimHarvests
       .filter(h => h.id !== harvest.id)
-      .sort((a,b) => (b.active?1:0)-(a.active?1:0) || a.name.localeCompare(b.name))
+      .sort(harvestDropdownOrder)
       .map(h => `<option value="${h.id}">${h.active ? '★ ' : ''}${escapeHtml(h.name)}</option>`).join('');
     el('moveHarvestTarget').value = getActiveHarvest().id;
     moveHarvestCallback = cb;
@@ -5795,7 +5842,7 @@
       save();
       renderJobTypes();
       populateJobSelect();
-      if(el('splitHourlyRates').checked) renderHourlyRateSplit();
+      refreshRateEditorSplit();
     },
     toggleJobType: function(name){
       const j = data.jobTypes.find(j => j.name === name);
@@ -5809,7 +5856,7 @@
       save();
       renderJobTypes();
       populateJobSelect();
-      if(el('splitHourlyRates').checked) renderHourlyRateSplit();
+      refreshRateEditorSplit();
     },
     editJobType: function(oldName){
       const newName = prompt('Rename job type:', oldName);
@@ -5828,7 +5875,7 @@
       save();
       renderJobTypes();
       populateJobSelect();
-      if(el('splitHourlyRates').checked) renderHourlyRateSplit();
+      refreshRateEditorSplit();
       renderEntries();
     },
     toggleBbudsButton: function(){
@@ -6054,22 +6101,10 @@
     // Estimator rate if it's never been paid at all). Looked up against the
     // full payment history regardless of scope — it's "what would we pay
     // today", not bounded by the report window.
-    const lastPayment = allSortedPayments[allSortedPayments.length - 1];
-    const currentRateLb = (lastPayment && lastPayment.rateLb) || data.estimator.ratePerLb || 0;
-    // B-Buds: the most recent payment that set a B-Buds rate, else the
-    // saved estimator rate, else the normal rate.
-    let currentRateBb = 0;
-    for(let i = allSortedPayments.length - 1; i >= 0; i--){
-      if(allSortedPayments[i].rateBb > 0){ currentRateBb = allSortedPayments[i].rateBb; break; }
-    }
-    if(!currentRateBb) currentRateBb = data.estimator.ratePerBb || currentRateLb;
-    function mostRecentRateForJob(jobName){
-      for(let i = allSortedPayments.length - 1; i >= 0; i--){
-        const rate = allSortedPayments[i].hourlyRates && allSortedPayments[i].hourlyRates[jobName];
-        if(rate > 0) return rate;
-      }
-      return data.estimator.ratePerHour || 0;
-    }
+    const payR = payRates();
+    const currentRateLb = payR.lb;
+    const currentRateBb = payR.bb > 0 ? payR.bb : payR.lb;
+    function mostRecentRateForJob(jobName){ return hourlyRateFor(jobName, payR); }
     const owedHoursByJob = hourlyJobs.map(j => {
       const owed = scopedEntries.filter(e => e.job === j.name && e.hours > 0)
         .reduce((s,e) => s + Math.max(0, ledger.unpaidHours[e.id] ?? e.hours), 0);
@@ -6130,7 +6165,7 @@
     outstandingItems.sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
 
     const title = unpaidMode ? 'Unpaid' : 'Financial Report';
-    const subtitle = scoped.subtitle + ' · Generated ' + fmtDate(todayStr());
+    const subtitle = scoped.subtitle;
     el('reportTitle').textContent = title;
     el('reportSubtitle').textContent = subtitle;
 
@@ -6886,10 +6921,10 @@
       entries = data.entries.slice();
       if(from) entries = entries.filter(e => e.date >= from);
       if(to) entries = entries.filter(e => e.date <= to);
-      subtitle = (from || to) ? `${from ? fmtDate(from) : 'Start'} – ${to ? fmtDate(to) : 'Now'}` : 'All entries';
+      subtitle = (from || to) ? `${from ? fmtDate(from) : 'Start'} – ${to ? fmtDate(to) : 'Now'}` : '';
     } else {
       entries = data.entries.slice();
-      subtitle = unpaidOnly ? `Generated ${fmtDate(todayStr())}` : 'All entries';
+      subtitle = '';
     }
 
     // Harvest filter: one harvest, or every harvest combined.
@@ -6904,7 +6939,7 @@
       showRemaining = true;
     }
     entries = entries.slice().sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
-    subtitle = subtitle + ' · ' + (picked ? picked.name : 'All harvests');
+    subtitle = (subtitle ? subtitle + ' · ' : '') + (picked ? picked.name : 'All harvests');
 
     return {entries, subtitle, showRemaining, from, to, harvestScoped: !!picked};
   }
@@ -6996,176 +7031,533 @@
     applyGramsPerLb(DEFAULT_GRAMS_PER_LB);
   });
 
-  // ---- Payment estimator ----
-  function bbRateOn(){ return el('est-split-bb').checked; }
-
-  function hourlySplitOn(){ return el('est-split-hourly').checked; }
-
-  // Hourly job types shown in the split: every active hourly type, plus any
-  // type that still has hours owed.
-  function estimatorHourlyJobs(){
-    return hourlyJobNamesForRates();
+  // ---- Pay rates and Outstanding Balance ----
+  // One saved set of rates (data.estimator) feeds the payment form, the
+  // Outstanding Balance dollars, and the earned-per-day figure. Until rates
+  // have been saved once, rates from earlier payments are used as a fallback.
+  function payRates(){
+    const est = data.estimator || {};
+    const saved = !!est.saved;
+    const pays = data.payments.slice().sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
+    const last = pays[pays.length - 1];
+    let lb = est.ratePerLb || 0;
+    let bb = est.ratePerBb || 0;
+    let hr = est.ratePerHour || 0;
+    const perJob = est.hourlyRates || {};
+    if(!saved){
+      if(!lb && last && last.rateLb) lb = last.rateLb;
+      if(!bb){
+        for(let i = pays.length - 1; i >= 0; i--){
+          if(pays[i].rateBb > 0){ bb = pays[i].rateBb; break; }
+        }
+      }
+      if(!hr){
+        for(let i = pays.length - 1; i >= 0 && !hr; i--){
+          const hrs = pays[i].hourlyRates || {};
+          const k = Object.keys(hrs).find(n => hrs[n] > 0);
+          if(k) hr = hrs[k];
+        }
+      }
+    }
+    return {lb, bb, hr, perJob, saved, pays};
   }
 
-  function renderEstimatorHourlySplit(){
+  function hourlyRateFor(job, R){
+    if(R.perJob[job] > 0) return R.perJob[job];
+    if(R.hr > 0) return R.hr;
+    if(!R.saved){
+      for(let i = R.pays.length - 1; i >= 0; i--){
+        const r = R.pays[i].hourlyRates && R.pays[i].hourlyRates[job];
+        if(r > 0) return r;
+      }
+    }
+    return 0;
+  }
+
+  function ratesAvailable(R){
+    return R.lb > 0 || R.bb > 0 || R.hr > 0
+      || Object.keys(R.perJob).some(k => R.perJob[k] > 0)
+      || (!R.saved && R.pays.some(p => p.hourlyRates && Object.keys(p.hourlyRates).some(k => p.hourlyRates[k] > 0)));
+  }
+
+  function fmtUsd(n){
+    return '$' + n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  // Exact unpaid balance valued at the current rates (null when no rates).
+  function computeOwedCash(){
+    const R = payRates();
+    if(!ratesAvailable(R)) return null;
     const bal = computeBalance();
-    const owedByJob = {};
-    bal.hourlyJobs.forEach(j => { owedByJob[j.name] = Math.max(0, j.owed); });
-    const saved = data.estimator.hourlyRates || {};
-    el('estHourlySplit').innerHTML = estimatorHourlyJobs().map((name, i) => `
-      <div class="row2" style="margin-top:8px;">
-        <div>
-          <label>${escapeHtml(name)} rate per hour ($)</label>
-          <input type="number" id="est-hr-rate-${i}" data-job="${escapeHtml(name)}" step="any" min="0" placeholder="Default rate" value="${saved[name] || ''}">
-        </div>
-        <div>
-          <label>${escapeHtml(name)} hours</label>
-          <input type="number" id="est-hr-hours-${i}" data-job="${escapeHtml(name)}" step="any" min="0" value="${roundNum(owedByJob[name] || 0, 2)}">
-        </div>
+    let normal = 0, bb = 0;
+    bal.strains.forEach(s => { const o = Math.max(0, s.owed); if(s.bbuds) bb += o; else normal += o; });
+    let cash = (normal / GRAMS_PER_LB) * R.lb + (bb / GRAMS_PER_LB) * (R.bb > 0 ? R.bb : R.lb);
+    bal.hourlyJobs.forEach(j => { cash += Math.max(0, j.owed) * hourlyRateFor(j.name, R); });
+    return roundNum(cash, 2);
+  }
+
+  // What was earned on one day, from that day's entries at the current rates.
+  function computeDayEarnings(day){
+    const R = payRates();
+    if(!ratesAvailable(R)) return null;
+    let cash = 0;
+    data.entries.filter(e => e.date === day).forEach(e => {
+      if(e.grams > 0) cash += (e.grams / GRAMS_PER_LB) * ((e.bbuds && R.bb > 0) ? R.bb : R.lb);
+      if(e.hours > 0) cash += e.hours * hourlyRateFor(e.job, R);
+    });
+    return roundNum(cash, 2);
+  }
+
+  function rateSummaryText(R){
+    const parts = [];
+    if(R.lb > 0) parts.push('$' + R.lb + '/lb');
+    if(R.bb > 0) parts.push('B-Buds $' + R.bb + '/lb');
+    const hasJobRates = Object.keys(R.perJob).some(k => R.perJob[k] > 0);
+    if(hasJobRates) parts.push('hourly by job');
+    else if(R.hr > 0) parts.push('$' + R.hr + '/hr');
+    return parts.join(' · ');
+  }
+
+  function renderBalance(){
+    const R = payRates();
+    const have = ratesAvailable(R);
+    const cash = computeOwedCash();
+    const owedText = cash === null ? 'No rates yet' : fmtUsd(cash);
+    el('balanceOwed').textContent = owedText;
+    el('owedTotal').textContent = owedText;
+    el('balanceNoRate').style.display = have ? 'none' : 'block';
+    if(!el('est-day').value) el('est-day').value = todayStr();
+    const day = el('est-day').value;
+    const earned = computeDayEarnings(day);
+    el('earnedValue').textContent = earned === null ? 'No rates yet' : fmtUsd(earned);
+    el('earnedLbl').textContent = day === todayStr() ? 'Earned Today' : 'Earned on ' + fmtDate(day);
+    el('rateText').textContent = have ? rateSummaryText(R) : 'No rates set';
+    el('rateChange').textContent = have ? 'Change Rates' : 'Set Pay Rates';
+  }
+
+  function rateEditorOpen(){ return el('rateEditor').style.display !== 'none'; }
+
+  function renderPayRateSplit(){
+    const R = payRates();
+    el('prHourlySplit').innerHTML = hourlyJobNamesForRates().map((name, i) => `
+      <div style="margin-top:8px;">
+        <label>${escapeHtml(name)} rate per hour ($)</label>
+        <input type="number" id="pr-hr-${i}" data-job="${escapeHtml(name)}" step="any" min="0" placeholder="Default rate" value="${R.perJob[name] || ''}">
       </div>`).join('') || '<p style="font-size:0.8rem;color:var(--muted);margin:8px 0 0;">No active hourly job types yet.</p>';
   }
 
-  // Reads the per-job rows into {job: {rate, hours}}.
-  function readEstimatorHourlySplit(){
-    const out = {};
-    estimatorHourlyJobs().forEach((name, i) => {
-      const r = el('est-hr-rate-' + i), h = el('est-hr-hours-' + i);
-      out[name] = {rate: r ? (parseFloat(r.value) || 0) : 0, hours: h ? (parseFloat(h.value) || 0) : 0};
-    });
-    return out;
+  function refreshRateEditorSplit(){
+    if(rateEditorOpen() && el('pr-hj-on').checked) renderPayRateSplit();
   }
 
-  function applyHourlySplitVisibility(){
-    const on = hourlySplitOn();
-    el('estHoursSimple').style.display = on ? 'none' : 'block';
-    el('estRateHourLabel').textContent = on ? 'Default rate per hour ($)' : 'Rate per hour ($)';
-    el('estHourlySplit').style.display = on ? 'block' : 'none';
-    if(on) renderEstimatorHourlySplit();
+  function applyRateEditorToggles(){
+    const bbOn = el('pr-bb-on').checked;
+    const hjOn = el('pr-hj-on').checked;
+    el('prBbWrap').style.display = bbOn ? 'block' : 'none';
+    el('prHourlySplit').style.display = hjOn ? 'block' : 'none';
+    el('prHrLabel').textContent = hjOn ? 'Default rate per hour ($)' : 'Rate per hour ($)';
+    if(hjOn) renderPayRateSplit();
   }
 
-  function loadEstimatorRates(){
-    el('est-rate-lb').value = data.estimator.ratePerLb || '';
-    el('est-rate-hour').value = data.estimator.ratePerHour || '';
-    el('est-rate-bb').value = data.estimator.ratePerBb || '';
-    // The B-Buds rate stays tucked away unless one has been set.
-    el('est-split-bb').checked = (data.estimator.ratePerBb || 0) > 0;
-    el('estBbWrap').style.display = bbRateOn() ? 'block' : 'none';
-    // Same for per-job hourly rates.
-    const savedHr = data.estimator.hourlyRates || {};
-    el('est-split-hourly').checked = Object.keys(savedHr).some(k => savedHr[k] > 0);
-    applyHourlySplitVisibility();
+  function openRateEditor(){
+    const R = payRates();
+    const have = ratesAvailable(R);
+    el('pr-lb').value = R.lb || '';
+    el('pr-hr').value = R.hr || '';
+    el('pr-bb').value = R.bb || '';
+    el('pr-bb-on').checked = R.bb > 0;
+    el('pr-hj-on').checked = Object.keys(R.perJob).some(k => R.perJob[k] > 0);
+    el('rateDisclaimer').style.display = have ? 'block' : 'none';
+    applyRateEditorToggles();
+    el('rateSummary').style.display = 'none';
+    el('rateEditor').style.display = 'block';
+    el('ratesCard').scrollIntoView({block: 'nearest'});
   }
 
-  function saveEstimatorRates(){
-    data.estimator.ratePerLb = parseFloat(el('est-rate-lb').value) || 0;
-    data.estimator.ratePerHour = parseFloat(el('est-rate-hour').value) || 0;
-    data.estimator.ratePerBb = bbRateOn() ? (parseFloat(el('est-rate-bb').value) || 0) : 0;
-    if(hourlySplitOn()){
-      const rows = readEstimatorHourlySplit();
-      const rates = {};
-      Object.keys(rows).forEach(n => { if(rows[n].rate > 0) rates[n] = rows[n].rate; });
-      data.estimator.hourlyRates = rates;
-    } else {
-      data.estimator.hourlyRates = {};
+  function closeRateEditor(){
+    el('rateEditor').style.display = 'none';
+    el('rateSummary').style.display = 'flex';
+  }
+
+  el('pr-bb-on').addEventListener('change', applyRateEditorToggles);
+  el('pr-hj-on').addEventListener('change', applyRateEditorToggles);
+  el('rateChange').addEventListener('click', openRateEditor);
+  el('rateCancel').addEventListener('click', closeRateEditor);
+  el('rateSave').addEventListener('click', function(){
+    const lb = parseFloat(el('pr-lb').value) || 0;
+    const hr = parseFloat(el('pr-hr').value) || 0;
+    const bb = el('pr-bb-on').checked ? (parseFloat(el('pr-bb').value) || 0) : 0;
+    const perJob = {};
+    if(el('pr-hj-on').checked){
+      el('prHourlySplit').querySelectorAll('input[data-job]').forEach(inp => {
+        const v = parseFloat(inp.value) || 0;
+        if(v > 0) perJob[inp.dataset.job] = v;
+      });
     }
-    save();
-  }
-
-  // Grams owed, split into normal and B-Buds. With the B-Buds rate hidden,
-  // B-Buds are simply included in the normal grams (same rate).
-  function prefillEstimatorAmounts(){
-    const bal = computeBalance();
-    const normal = bal.strains.filter(s => !s.bbuds).reduce((s,x) => s + Math.max(0, x.owed), 0);
-    const bb = bal.strains.filter(s => s.bbuds).reduce((s,x) => s + Math.max(0, x.owed), 0);
-    const unpaidHours = bal.hourlyJobs.reduce((s,job) => s + Math.max(0, job.owed), 0);
-    el('est-grams').value = roundNum(bbRateOn() ? normal : normal + bb, 1);
-    el('est-grams-bb').value = roundNum(bb, 1);
-    el('est-hours').value = roundNum(unpaidHours, 2);
-    if(hourlySplitOn()) renderEstimatorHourlySplit();
-  }
-
-  el('est-rate-lb').addEventListener('change', saveEstimatorRates);
-  el('est-rate-hour').addEventListener('change', saveEstimatorRates);
-  el('est-rate-bb').addEventListener('change', saveEstimatorRates);
-  el('est-split-hourly').addEventListener('change', function(){
-    applyHourlySplitVisibility();
-    saveEstimatorRates();
-  });
-  el('estHourlySplit').addEventListener('change', saveEstimatorRates);
-  el('est-split-bb').addEventListener('change', function(){
-    el('estBbWrap').style.display = this.checked ? 'block' : 'none';
-    saveEstimatorRates();
-    prefillEstimatorAmounts();
-  });
-
-  // $ for a given amount of normal / B-Buds grams and hours. A blank B-Buds
-  // rate falls back to the normal rate.
-  // `hours` is either a plain number (one shared hourly rate) or, with the
-  // per-job split on, an object {jobName: hours}.
-  function estimateTotal(gramsNormal, gramsBb, hours){
-    const rateLb = parseFloat(el('est-rate-lb').value) || 0;
-    const rateBb = bbRateOn() ? (parseFloat(el('est-rate-bb').value) || rateLb) : rateLb;
-    let hoursCost = 0;
-    if(typeof hours === 'object'){
-      const rows = readEstimatorHourlySplit();
-      const defaultRate = parseFloat(el('est-rate-hour').value) || 0;
-      Object.keys(hours).forEach(job => { hoursCost += hours[job] * (((rows[job] && rows[job].rate) || 0) || defaultRate); });
-    } else {
-      hoursCost = hours * (parseFloat(el('est-rate-hour').value) || 0);
-    }
-    return (gramsNormal / GRAMS_PER_LB) * rateLb + (gramsBb / GRAMS_PER_LB) * rateBb + hoursCost;
-  }
-
-  el('calcEstimate').addEventListener('click', function(){
-    const grams = parseFloat(el('est-grams').value) || 0;
-    const gramsBb = bbRateOn() ? (parseFloat(el('est-grams-bb').value) || 0) : 0;
-    let hours;
-    if(hourlySplitOn()){
-      hours = {};
-      const rows = readEstimatorHourlySplit();
-      Object.keys(rows).forEach(n => { hours[n] = rows[n].hours; });
-    } else {
-      hours = parseFloat(el('est-hours').value) || 0;
-    }
-    const total = estimateTotal(grams, gramsBb, hours);
-    const box = el('estimateResult');
-    box.style.display = 'block';
-    box.textContent = '$' + total.toFixed(2);
-  });
-
-  function computeDayEarnings(day){
-    const dayEntries = data.entries.filter(e => e.date === day);
-    if(dayEntries.length === 0) return 0;
-    const gramsBb = bbRateOn() ? dayEntries.reduce((s,e) => s + (e.bbuds ? (e.grams||0) : 0), 0) : 0;
-    const grams = dayEntries.reduce((s,e) => s + (e.grams||0), 0) - gramsBb;
-    let hours;
-    if(hourlySplitOn()){
-      hours = {};
-      dayEntries.forEach(e => { if(e.hours > 0) hours[e.job] = (hours[e.job]||0) + e.hours; });
-    } else {
-      hours = dayEntries.reduce((s,e) => s + (e.hours||0), 0);
-    }
-    return estimateTotal(grams, gramsBb, hours);
-  }
-
-  el('calcDayEarnings').addEventListener('click', function(){
-    const day = el('est-day').value;
-    if(!day){
-      alert('Pick a day first.');
+    if(lb <= 0 && hr <= 0 && bb <= 0 && Object.keys(perJob).length === 0){
+      alert('Enter at least one rate.');
       return;
     }
-    const total = computeDayEarnings(day);
-    const box = el('dayEarningsResult');
-    box.style.display = 'block';
-    box.textContent = '$' + total.toFixed(2);
+    data.estimator.ratePerLb = lb;
+    data.estimator.ratePerHour = hr;
+    data.estimator.ratePerBb = bb;
+    data.estimator.hourlyRates = perJob;
+    data.estimator.saved = true;
+    save();
+    closeRateEditor();
+    renderBalance();
+    renderTotals();
   });
 
-  el('calcTodayEarnings').addEventListener('click', function(){
-    const total = computeDayEarnings(todayStr());
-    const box = el('todayEarningsResult');
-    box.style.display = 'block';
-    box.textContent = '$' + total.toFixed(2);
+  function goSetRates(){
+    payView = 'payment';
+    applyCardToggles();
+    openRateEditor();
+  }
+  el('balanceNoRate').addEventListener('click', goSetRates);
+  el('balanceNoRate').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goSetRates(); }
   });
+
+  el('est-day').addEventListener('change', renderBalance);
+
+  // ---- Time Sheet (manager mode) ----
+  // One timer per person. Times live in data.timesheet.rows as
+  // {accMs, since, job}; nothing becomes an entry until the sheet is
+  // submitted, so times can be edited first.
+  let tsEditing = null;
+
+  function tsState(){
+    if(!data.timesheet || typeof data.timesheet.rows !== 'object') data.timesheet = {rows: {}, date: ''};
+    return data.timesheet;
+  }
+  function tsMs(r){ return (r.accMs || 0) + (r.since ? Date.now() - r.since : 0); }
+  function tsRowFor(name){
+    const t = tsState();
+    if(!t.rows[name]) t.rows[name] = {accMs: 0, since: null, job: ''};
+    return t.rows[name];
+  }
+  function tsHasTime(){
+    const rows = tsState().rows;
+    return Object.keys(rows).some(n => rows[n].since || (rows[n].accMs || 0) > 0);
+  }
+  function tsRunningCount(){
+    const rows = tsState().rows;
+    return Object.keys(rows).filter(n => rows[n].since).length;
+  }
+  function tsFmt(ms){
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), sec = total % 60;
+    return h + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+  // "1:25:30", "1:25", or decimal hours like "1.5" → milliseconds (null if invalid).
+  function tsParse(str){
+    str = String(str || '').trim();
+    let m = str.match(/^(\d+):(\d{1,2})(?::(\d{1,2}))?$/);
+    if(m) return ((+m[1]) * 3600 + (+m[2]) * 60 + (+(m[3] || 0))) * 1000;
+    if(/^\d*\.?\d+$/.test(str)) return Math.round(parseFloat(str) * 3600000);
+    return null;
+  }
+  function tsHrs(ms){
+    return String(Math.ceil(ms / 3600000 * 100 - 1e-9) / 100);
+  }
+  function tsHourlyJobs(){
+    return data.jobTypes.filter(j => j.kind === 'hourly' && !j.deleted && j.active).map(j => j.name);
+  }
+  function tsDefaultJob(){
+    const t = tsState();
+    const jobs = tsHourlyJobs();
+    if(t.defaultJob && jobs.includes(t.defaultJob)) return t.defaultJob;
+    return jobs.includes('Trimming') ? 'Trimming' : (jobs[0] || '');
+  }
+  function tsNames(){
+    const me = getMeName();
+    const names = data.trimEmployees.filter(p => p.active).map(p => p.name);
+    Object.keys(tsState().rows).forEach(n => { if(!names.includes(n)) names.push(n); });
+    names.sort((a,b) => (b === me) - (a === me));
+    return names;
+  }
+
+  function tsUpdateBanner(){
+    const on = !!data.trimManagerEnabled && tsHasTime();
+    const b = el('tsBanner');
+    b.style.display = on ? 'block' : 'none';
+    el('categoryMenuToggle').classList.toggle('ts-dot', on);
+    if(!on) return;
+    const n = tsRunningCount();
+    b.textContent = n > 0
+      ? '⏱ ' + n + (n === 1 ? ' timer' : ' timers') + ' running · Tap to open'
+      : '⏱ Time sheet in progress · Tap to open';
+  }
+
+  function tsRender(){
+    const t = tsState();
+    const jobs = tsHourlyJobs();
+    el('tsDate').value = t.date || todayStr();
+    const me = getMeName();
+    const defJob = tsDefaultJob();
+    const indiv = !!t.perPerson;
+    el('tsJobLabel').textContent = indiv ? 'Default job type' : 'Job type (everyone)';
+    el('tsJobMode').textContent = indiv ? 'Same for everyone' : 'Set individually';
+    el('tsJob').innerHTML = jobs.map(j => `<option value="${escapeHtml(j)}"${j === defJob ? ' selected' : ''}>${escapeHtml(j)}</option>`).join('')
+      + '<option value="__add__">+ Add Job Type</option>';
+    el('tsList').innerHTML = tsNames().map(name => {
+      const r = t.rows[name] || {accMs: 0, since: null, job: ''};
+      const job = r.job || defJob;
+      const opts = (jobs.includes(job) || !job ? jobs : jobs.concat(job)).map(j => `<option value="${escapeHtml(j)}"${j === job ? ' selected' : ''}>${escapeHtml(j)}</option>`).join('')
+        + '<option value="__add__">+ Add Job Type</option>';
+      const jobLine = indiv
+        ? `<div class="ts-jobline"><select class="ts-job" data-person="${escapeHtml(name)}">${opts}</select></div>`
+        : '';
+      const running = !!r.since;
+      const ms = tsMs(r);
+      const editing = tsEditing === name;
+      let mid;
+      if(editing){
+        mid = `<span class="ts-hrs"><input type="text" class="ts-edit" data-person="${escapeHtml(name)}" value="${tsHrs(ms)}" inputmode="decimal" aria-label="Hours for ${escapeHtml(name)}"><small>hrs</small></span>`;
+      } else if(running){
+        mid = `<span class="ts-clock" data-clock="${escapeHtml(name)}">${tsFmt(ms)}</span>`;
+      } else if(ms <= 0){
+        mid = `<span class="ts-clock ts-zero">0:00:00</span>`;
+      } else {
+        mid = `<span class="ts-hrs ts-tap" data-edit="${escapeHtml(name)}" role="button" tabindex="0" aria-label="Edit hours for ${escapeHtml(name)}">${tsHrs(ms)}<small>hrs</small><span class="ts-pen">✎</span></span>`;
+      }
+      const clear = (ms > 0 || running)
+        ? `<div><button type="button" class="ts-link" data-act="reset" data-person="${escapeHtml(name)}">Clear</button></div>` : '';
+      return `
+        <div class="ts-row${running ? ' running' : ''}" data-person="${escapeHtml(name)}">
+          <div class="ts-who"><div class="ts-name">${escapeHtml(name)}${name === me ? ' (me)' : ''}</div>${jobLine}${clear}</div>
+          ${mid}
+          <button type="button" class="btn ts-main" data-act="toggle" data-person="${escapeHtml(name)}">${running ? 'Stop' : 'Start'}</button>
+        </div>`;
+    }).join('') || '<div class="empty">No team members yet. Add one below.</div>';
+  }
+
+  function openTimeSheet(){
+    tsEditing = null;
+    tsRender();
+    el('tsOverlay').classList.add('open');
+    el('tsOverlay').scrollTop = 0;
+    el('bottomNav').style.display = 'none';
+  }
+  function closeTimeSheet(){
+    tsFinishEdit();
+    el('tsOverlay').classList.remove('open');
+    el('bottomNav').style.display = 'flex';
+    tsUpdateBanner();
+  }
+
+  // Applies the typed time (if any) of the row being edited.
+  function tsFinishEdit(){
+    if(!tsEditing) return true;
+    const name = tsEditing;
+    const inp = el('tsList').querySelector('input.ts-edit');
+    if(inp){
+      const ms = tsParse(inp.value);
+      if(ms === null){ alert('Enter hours like 1.25 (or as h:mm).'); return false; }
+      const r = tsRowFor(name);
+      r.accMs = ms;
+      r.since = r.since ? Date.now() : null;
+      save();
+    }
+    tsEditing = null;
+    return true;
+  }
+
+  el('tsList').addEventListener('click', function(e){
+    const tap = e.target.closest('[data-edit]');
+    if(tap){
+      if(!tsFinishEdit()) return;
+      tsEditing = tap.dataset.edit;
+      tsRender();
+      const inp = el('tsList').querySelector('input.ts-edit');
+      if(inp){ inp.focus(); inp.select(); }
+      return;
+    }
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const name = btn.dataset.person;
+    const act = btn.dataset.act;
+    if(!tsFinishEdit()) return;
+    const r = tsRowFor(name);
+    if(act === 'toggle'){
+      if(r.since){ r.accMs = tsMs(r); r.since = null; }
+      else {
+        r.since = Date.now();
+        const t = tsState();
+        if(!t.date) t.date = todayStr();
+      }
+    } else if(act === 'reset'){
+      if((r.accMs > 0 || r.since) && !confirm('Reset ' + name + '\'s time to zero?')) return;
+      r.accMs = 0; r.since = null;
+      r.job = '';
+    }
+    save();
+    tsRender();
+    tsUpdateBanner();
+  });
+
+  el('tsList').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && e.target.classList.contains('ts-edit')){
+      e.preventDefault();
+      if(!tsFinishEdit()) return;
+      tsRender(); tsUpdateBanner();
+    } else if((e.key === 'Enter' || e.key === ' ') && e.target.dataset && e.target.dataset.edit){
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+
+  // Tapping away from the hours box applies it (a short delay lets a tap on
+  // another button register first).
+  el('tsList').addEventListener('focusout', function(e){
+    if(!e.target.classList || !e.target.classList.contains('ts-edit') || !tsEditing) return;
+    if(!tsFinishEdit()) return;
+    setTimeout(function(){ tsRender(); tsUpdateBanner(); }, 150);
+  });
+
+  el('tsList').addEventListener('change', function(e){
+    const sel = e.target.closest('select.ts-job');
+    if(!sel) return;
+    const name = sel.dataset.person;
+    const r = tsRowFor(name);
+    if(sel.value === '__add__'){
+      const typed = (prompt('New job type name (paid by the hour):', '') || '').trim();
+      if(typed){
+        const added = addJobTypeInline(typed, 'hourly');
+        if(added){ r.job = added; populateJobSelect(); }
+        else alert('A job type named "' + typed + '" already exists with a different pay type.');
+      }
+      save(); tsRender(); return;
+    }
+    r.job = sel.value;
+    save();
+  });
+
+  el('tsJobMode').addEventListener('click', function(){
+    if(!tsFinishEdit()) return;
+    const t = tsState();
+    t.perPerson = !t.perPerson;
+    save();
+    tsRender();
+  });
+
+  el('tsJob').addEventListener('change', function(){
+    const t = tsState();
+    if(this.value === '__add__'){
+      const typed = (prompt('New job type name (paid by the hour):', '') || '').trim();
+      if(typed){
+        const added = addJobTypeInline(typed, 'hourly');
+        if(added){ t.defaultJob = added; populateJobSelect(); }
+        else alert('A job type named "' + typed + '" already exists with a different pay type.');
+      }
+    } else {
+      t.defaultJob = this.value;
+    }
+    save();
+    tsRender();
+  });
+
+  el('tsDate').addEventListener('change', function(){
+    tsState().date = this.value || '';
+    save();
+  });
+
+  function tsAddPerson(){
+    const input = el('tsNewPerson');
+    const name = input.value.trim();
+    if(!name) return;
+    const existing = data.trimEmployees.find(p => p.name === name);
+    if(!existing){ data.trimEmployees.push({name, active: true}); autoSortList(data, 'trimEmployees'); }
+    else if(!existing.active || existing.deleted){ existing.active = true; delete existing.deleted; }
+    input.value = '';
+    save();
+    renderEmployeeChips();
+    populateTrimPersonSelect();
+    tsRender();
+  }
+  el('tsAddPerson').addEventListener('click', tsAddPerson);
+  el('tsNewPerson').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); tsAddPerson(); }
+  });
+
+  function tsSubmit(){
+    if(!tsFinishEdit()) return;
+    const t = tsState();
+    const day = el('tsDate').value || todayStr();
+    const items = [];
+    tsNames().forEach(name => {
+      const r = t.rows[name];
+      if(!r) return;
+      const ms = tsMs(r);
+      if(ms <= 0) return;
+      items.push({name, hours: Math.ceil(ms / 3600000 * 100 - 1e-9) / 100, job: (t.perPerson && r.job) ? r.job : tsDefaultJob()});
+    });
+    if(items.length === 0){ alert('No time to submit yet.'); return; }
+    if(items.some(i => !i.job)){ alert('Add an hourly (by hours) job type first.'); return; }
+    const dest = getActiveHarvest();
+    const total = items.reduce((s,i) => s + i.hours, 0);
+    const lines = items.map(i => i.name + ': ' + roundNum(i.hours, 2) + ' h (' + i.job + ')').join('\n');
+    if(!confirm('Submit this time sheet for ' + fmtDate(day) + ' to ' + dest.name + '?\n\n' + lines + '\n\nTotal: ' + roundNum(total, 2) + ' h\nAny running timers will stop.')) return;
+    const me = getMeName();
+    items.forEach(i => {
+      if(i.name === me){
+        const entry = {id: uid(), date: day, job: i.job, strain: '', grams: 0, hours: i.hours, amount: 0, description: '', categories: {}, harvestId: dest.id, bbuds: false};
+        data.entries.push(entry);
+        syncCrewRowForEntry(entry, true);
+      } else {
+        dest.logs.push({id: uid(), date: day, person: i.name, strain: '', room: '', grams: 0, hours: i.hours, note: i.job, bbuds: false});
+      }
+    });
+    t.rows = {};
+    t.date = '';
+    save();
+    renderEntries();
+    renderTotals();
+    renderTrimHarvestsList();
+    renderTrimDayEntries();
+    closeTimeSheet();
+  }
+  el('tsSubmit').addEventListener('click', tsSubmit);
+  el('tsClear').addEventListener('click', function(){
+    if(!tsHasTime()){ closeTimeSheet(); return; }
+    if(!confirm('Clear this time sheet? All times will be discarded and nothing will be logged.')) return;
+    const t = tsState();
+    t.rows = {};
+    t.date = '';
+    tsEditing = null;
+    save();
+    closeTimeSheet();
+  });
+  el('tsClose').addEventListener('click', closeTimeSheet);
+
+  el('tsOpenBtn').addEventListener('click', function(){
+    el('categoryMenuPanel').style.display = 'none';
+    openTimeSheet();
+  });
+  function tsBannerOpen(){ openTimeSheet(); }
+  el('tsBanner').addEventListener('click', tsBannerOpen);
+  el('tsBanner').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); tsBannerOpen(); }
+  });
+
+  // Live clocks. Only text is updated so inputs and menus aren't disturbed.
+  setInterval(function(){
+    if(!data.trimManagerEnabled) return;
+    if(el('tsOverlay').classList.contains('open')){
+      const rows = tsState().rows;
+      el('tsList').querySelectorAll('[data-clock]').forEach(c => {
+        const r = rows[c.dataset.clock];
+        c.textContent = tsFmt(r ? tsMs(r) : 0);
+      });
+    }
+  }, 1000);
+
+  // Reopening the app with unsubmitted time brings the sheet straight back.
+  function tsInit(){
+    tsUpdateBanner();
+    if(data.trimManagerEnabled && tsHasTime()) openTimeSheet();
+  }
 
   // ---- Collapsible section persistence ----
   function initCollapsibleSections(ids){
@@ -7228,6 +7620,56 @@
     el('bottomNav').style.display = 'none';
   }
 
+  // ---- Phone Back button ----
+  // Back steps out of whatever is open (a sheet, a harvest sub-page, a tab)
+  // instead of closing the app. One extra history entry sits above the
+  // app's starting point; each Back press is handled here and the entry is
+  // restored, until nothing is left to close and Back is allowed to leave.
+  let ttBackArmed = false;
+  function ttArmBack(){
+    if(ttBackArmed) return;
+    ttBackArmed = true;
+    if(!(history.state && history.state.tt === 1)){
+      history.replaceState({tt: 0}, '');
+      history.pushState({tt: 1}, '');
+    }
+  }
+  document.addEventListener('click', ttArmBack, {capture: true, once: true});
+
+  // Returns true when something was closed (or the user chose to stay),
+  // false when there is nothing left to back out of.
+  function ttHandleBack(){
+    if(el('reportOverlay').classList.contains('open')){ el('closeReport').click(); return true; }
+    if(el('tsOverlay').classList.contains('open')){ closeTimeSheet(); return true; }
+    if(el('blurModal').style.display === 'flex'){ el('blurCancel').click(); return true; }
+    if(el('moveHarvestModal').style.display === 'flex'){ el('moveHarvestCancel').click(); return true; }
+    if(currentPage === 'harvests'){
+      if(inventoryForm || noteEditorOpen){
+        const noteUnsaved = noteEditorOpen && el('harvestNoteInput').value.trim() !== '';
+        const invUnsaved = !!inventoryForm && (inventoryForm.rows.length > 0 || el('invTitle').value.trim() !== '' || el('invGrams').value.trim() !== '');
+        if((noteUnsaved || invUnsaved) && !confirm('Discard unsaved ' + (invUnsaved ? 'inventory' : 'note') + ' changes?')) return true;
+        if(inventoryForm) el('invCancel').click(); else el('harvestNoteCancel').click();
+        return true;
+      }
+      if(openInventoryId){ el('invDocBack').click(); return true; }
+      if(harvestReportsOpen){ el('hvRepBack').click(); return true; }
+      if(openHarvestId){ showHarvestList(); return true; }
+    }
+    if(currentPage === 'manageHarvest'){ showPage('settings'); return true; }
+    if(currentPage !== 'home'){ showPage('home'); return true; }
+    return false;
+  }
+
+  window.addEventListener('popstate', function(){
+    if(!ttBackArmed) return;
+    if(ttHandleBack()){
+      history.pushState({tt: 1}, '');
+    } else {
+      // Nothing left to close: leave the app as Back normally would.
+      history.back();
+    }
+  });
+
   // ---- Init ----
   function init(){
     setThemeAttr(data.theme);
@@ -7245,10 +7687,11 @@
     renderStrainChips();
     renderJobTypes();
     renderPayments();
-    loadEstimatorRates();
+    el('est-day').value = todayStr();
     setReportScope('all');
     setReportType('entries');
     resumeTimerIfActive();
+    tsInit();
     initCollapsibleSections(['paymentHistorySection']);
     // These cards are always open.
     document.querySelectorAll('details.fixed-card').forEach(d => {
