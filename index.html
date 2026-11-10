@@ -700,6 +700,7 @@
     border-top:1px solid var(--border);
     margin:16px 0;
   }
+  .report-divider.subtle{opacity:0.45;margin:12px 0;}
   .segmented{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -939,6 +940,26 @@
     border-radius:10px;
     padding:10px 8px 9px;
   }
+  .stat-toggle{position:relative;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+  .stat-toggle:active{filter:brightness(0.96);}
+  .unit-badge{
+    position:absolute;
+    top:5px;
+    right:6px;
+    width:16px;
+    height:16px;
+    border:1px solid var(--muted);
+    border-radius:50%;
+    color:var(--muted);
+    font-size:0.5rem;
+    font-weight:700;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  /* the g has a tail below the line, so it sits higher to look centered */
+  .unit-badge.is-g{padding-bottom:3px;}
   .stat .num{
     font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
     font-size:1.45rem;
@@ -1063,69 +1084,6 @@
     font-size:0.88rem;
   }
   .jobtype-item:last-child{border-bottom:none;}
-  .section-order-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:8px 4px;
-    border-bottom:1px solid var(--border);
-    background:var(--card);
-    font-size:0.88rem;
-  }
-  .section-order-row:last-child{border-bottom:none;}
-  .section-order-row.dragging{
-    opacity:0.6;
-    box-shadow:0 2px 8px rgba(0,0,0,0.15);
-    border-radius:8px;
-  }
-  .drag-handle{
-    cursor:grab;
-    color:var(--muted);
-    font-size:1.1rem;
-    padding:4px 8px;
-    touch-action:none;
-    user-select:none;
-    line-height:1;
-  }
-  .section-order-group{
-    margin-bottom:14px;
-  }
-  .section-order-group:last-child{
-    margin-bottom:0;
-  }
-  .section-order-group-label{
-    font-weight:700;
-    font-size:0.78rem;
-    color:var(--green-dark);
-    text-transform:uppercase;
-    letter-spacing:0.3px;
-    margin-bottom:4px;
-  }
-  .section-order-rows{
-    border:1px solid var(--border);
-    border-radius:8px;
-    overflow:hidden;
-  }
-  .section-order-row{
-    flex-wrap:wrap;
-  }
-  .section-order-row span:nth-child(2){
-    flex:1;
-  }
-  .section-order-empty{
-    padding:10px 8px;
-    font-size:0.8rem;
-    color:var(--muted);
-    background:var(--card);
-  }
-  .section-order-page-select{
-    font-size:0.75rem;
-    padding:4px 6px;
-    border-radius:6px;
-    border:1px solid var(--border);
-    background:var(--cream);
-    color:var(--text);
-  }
   .jobtype-item .tag{
     font-size:0.7rem;
     padding:2px 8px;
@@ -1193,6 +1151,20 @@
   header{padding-bottom:10px;}
   header .leaf-icon{width:56px;height:50px;margin-top:4px;}
   header h1{font-size:1.9rem;margin-top:4px;}
+
+  /* ---- Card toggles (Payments / Reports) ---- */
+  .pill-toggle{display:flex;gap:0;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:3px;margin-bottom:12px;}
+  .pill-toggle .pill-btn{flex:1;border-radius:999px;padding:9px 4px;font-size:0.88rem;}
+  .pill-toggle .pill-btn:not(.active){background:transparent;border-color:transparent;color:var(--muted);}
+
+  /* Personal | Crew toggle sits on the Past Entries title line, right-aligned */
+  #entriesCard{position:relative;}
+  #entriesToggle{position:absolute;top:14px;right:12px;margin:0;width:auto;padding:2px;z-index:2;}
+  #entriesToggle .pill-btn{flex:none;padding:4px 11px;font-size:0.7rem;line-height:1.2;}
+
+  /* Cards that are always open (no collapsing) */
+  details.fixed-card > summary{cursor:default;}
+  details.fixed-card > summary:before, details.fixed-card[open] > summary:before{content:none;}
 
   /* ---- Help ---- */
   .help-search{width:100%;margin-bottom:10px;}
@@ -1410,7 +1382,7 @@
         <button type="button" class="icon-btn menu-dots" id="categoryMenuToggle" title="Categories">⋮</button>
         <div class="menu-panel" id="categoryMenuPanel" style="display:none;">
           <div class="menu-panel-title">Show on form</div>
-          <div class="meta" style="margin:0 0 8px;">Hiding doesn't affect past entries.</div>
+          <div class="meta" style="margin:0 0 8px;font-size:0.62rem;">Hiding doesn't affect past entries.</div>
           <div id="categoryMenuList"></div>
         </div>
       </div>
@@ -1566,13 +1538,35 @@
     </div>
   </div>
 
+
+  <!-- Entries -->
+  <details class="card" open id="entriesCard">
+    <summary>📋 Past Entries</summary>
+    <div class="pill-toggle" id="entriesToggle" style="display:none;">
+      <button type="button" class="seg-btn pill-btn active" data-view="personal">Personal</button>
+      <button type="button" class="seg-btn pill-btn" data-view="crew">Crew</button>
+    </div>
+    <div id="entriesList"></div>
+    <button type="button" class="btn btn-secondary" id="entriesMore" style="width:100%;margin-top:10px;">Show more</button>
+  </details>
+
+</div><!-- /page-home -->
+
+<div class="app-page" id="page-payments" data-page="payments" style="display:none;">
+
+  <div class="pill-toggle" id="payToggle">
+    <button type="button" class="seg-btn pill-btn active" data-view="payment">Log a Payment</button>
+    <button type="button" class="seg-btn pill-btn" data-view="estimator">Estimator</button>
+  </div>
+
   <!-- Totals -->
   <div class="card" id="totalsCard">
     <h2>📊 Unpaid Totals</h2>
     <div class="stats">
-      <div class="stat">
-        <div class="num" id="totalGrams">0g</div>
-        <div class="lbl">Grams</div>
+      <div class="stat stat-toggle" id="totalWeightStat" role="button" tabindex="0" title="Tap to switch between pounds and grams">
+        <span class="unit-badge is-g" id="totalUnitBadge" aria-hidden="true">g</span>
+        <div class="num" id="totalGrams">0 lb</div>
+        <div class="lbl" id="totalGramsLbl">Pounds</div>
       </div>
       <div class="stat">
         <div class="num" id="totalHours">0</div>
@@ -1581,18 +1575,8 @@
     </div>
   </div>
 
-  <!-- Entries -->
-  <details class="card" open id="entriesCard">
-    <summary>📋 Unpaid Entries</summary>
-    <div id="entriesList"></div>
-  </details>
-
-</div><!-- /page-home -->
-
-<div class="app-page" id="page-payments" data-page="payments" style="display:none;">
-
   <!-- Payments -->
-  <details class="card" open id="paymentCard">
+  <details class="card fixed-card" open id="paymentCard">
     <summary>💰 Log a Payment</summary>
     <div class="menu-wrap card-menu">
       <button type="button" class="icon-btn menu-dots" id="payMenuToggle" title="Pay options">⋮</button>
@@ -1638,7 +1622,7 @@
   </details>
 
   <!-- Payment Estimator -->
-  <details class="card" open id="estimatorCard">
+  <details class="card fixed-card" open id="estimatorCard">
     <summary>🧮 Payment Estimator</summary>
     <div class="menu-wrap card-menu">
       <button type="button" class="icon-btn menu-dots" id="estMenuToggle" title="Pay options">⋮</button>
@@ -1703,60 +1687,64 @@
 
 <div class="app-page" id="page-reports" data-page="reports" style="display:none;">
 
+  <div class="pill-toggle" id="reportToggle" style="display:none;">
+    <button type="button" class="seg-btn pill-btn active" data-view="personal">Personal</button>
+    <button type="button" class="seg-btn pill-btn" data-view="crew">Crew</button>
+  </div>
+
   <!-- Report generator -->
-  <details class="card" open id="reportCard">
+  <details class="card fixed-card" open id="reportCard">
     <summary>📤 Personal Reports</summary>
 
-    <label>Report</label>
+    <label>Report for</label>
+    <div class="segmented" id="scopeSegmented">
+      <button type="button" class="seg-btn" data-scope="today">Today</button>
+      <button type="button" class="seg-btn" data-scope="day">Specific Day</button>
+      <button type="button" class="seg-btn" data-scope="range">Date Range</button>
+      <button type="button" class="seg-btn active" data-scope="all">All Time</button>
+    </div>
+
+    <div id="scopeDayInput" class="scope-input" style="margin-top:10px;display:none;">
+      <div class="date-field">
+        <input type="date" id="r-day">
+        <span class="date-placeholder" id="r-day-placeholder"><span>Add Date</span><span class="date-caret">▾</span></span>
+      </div>
+    </div>
+
+    <div id="scopeRangeInput" class="scope-input" style="margin-top:10px;display:none;">
+      <div class="row2">
+        <div>
+          <label>From</label>
+          <input type="date" id="r-from">
+        </div>
+        <div>
+          <label>To</label>
+          <input type="date" id="r-to">
+        </div>
+      </div>
+    </div>
+
+    <div class="report-divider subtle"></div>
+
+    <label style="margin-top:0;">Harvest</label>
+    <select id="r-harvest"></select>
+
+    <div class="report-divider"></div>
+
+    <label style="margin-top:0;">Report</label>
     <div class="segmented" id="reportTypeSegmented">
       <button type="button" class="seg-btn active" data-rtype="entries">📋 Entries</button>
       <button type="button" class="seg-btn" data-rtype="financial">💰 Financial</button>
-      <button type="button" class="seg-btn" data-rtype="unpaid" style="grid-column:1 / -1;">⏳ All Unpaid</button>
-    </div>
-    <p id="reportTypeHint" style="font-size:0.75rem;color:var(--muted);margin:8px 0 0;"></p>
-
-    <div id="reportScopeBlock">
-      <div class="report-divider"></div>
-      <label style="margin-top:0;">For</label>
-      <div class="segmented" id="scopeSegmented">
-        <button type="button" class="seg-btn" data-scope="today">Today</button>
-        <button type="button" class="seg-btn" data-scope="day">Specific Day</button>
-        <button type="button" class="seg-btn" data-scope="range">Date Range</button>
-        <button type="button" class="seg-btn active" data-scope="all">All Time</button>
-        <button type="button" class="seg-btn" data-scope="harvest" style="grid-column:1 / -1;">By Harvest</button>
-      </div>
-
-      <div id="scopeDayInput" class="scope-input" style="margin-top:10px;display:none;">
-        <div class="date-field">
-          <input type="date" id="r-day">
-          <span class="date-placeholder" id="r-day-placeholder"><span>Add Date</span><span class="date-caret">▾</span></span>
-        </div>
-      </div>
-
-      <div id="scopeRangeInput" class="scope-input" style="margin-top:10px;display:none;">
-        <div class="row2">
-          <div>
-            <label>From</label>
-            <input type="date" id="r-from">
-          </div>
-          <div>
-            <label>To</label>
-            <input type="date" id="r-to">
-          </div>
-        </div>
-      </div>
-
-      <div id="scopeHarvestInput" class="scope-input" style="margin-top:10px;display:none;">
-        <select id="r-harvest"></select>
-      </div>
+      <button type="button" class="seg-btn" data-rtype="unpaid" style="grid-column:1 / -1;">⏳ Unpaid</button>
     </div>
 
     <div class="report-divider"></div>
+
     <button class="btn btn-primary" id="generateReport" style="width:100%;">Generate Report</button>
   </details>
 
   <!-- Crew Reports (manager mode) -->
-  <details class="card" open id="crewReportCard" style="display:none;">
+  <details class="card fixed-card" open id="crewReportCard" style="display:none;">
     <summary>👥 Crew Reports</summary>
 
     <label>Report for</label>
@@ -1766,9 +1754,6 @@
       <button type="button" class="seg-btn" data-scope="range">Date Range</button>
       <button type="button" class="seg-btn active" data-scope="all">All Time</button>
     </div>
-
-    <label style="margin-top:10px;">Harvest</label>
-    <select id="tm-r-harvest"></select>
 
     <div id="tmScopeDayInput" class="scope-input" style="margin-top:10px;display:none;">
       <div class="date-field">
@@ -1789,6 +1774,11 @@
         </div>
       </div>
     </div>
+
+    <div class="report-divider subtle"></div>
+
+    <label style="margin-top:0;">Harvest</label>
+    <select id="tm-r-harvest"></select>
 
     <div class="report-divider"></div>
 
@@ -1857,7 +1847,7 @@
       <h2>Personal reports</h2>
       <button type="button" class="btn btn-secondary" id="hvRepEntries" style="width:100%;margin-bottom:8px;">📋 Entries</button>
       <button type="button" class="btn btn-secondary" id="hvRepFinancial" style="width:100%;margin-bottom:8px;">💰 Financial (paid and unpaid)</button>
-      <button type="button" class="btn btn-secondary" id="hvRepUnpaid" style="width:100%;">🧾 All unpaid</button>
+      <button type="button" class="btn btn-secondary" id="hvRepUnpaid" style="width:100%;">🧾 Unpaid</button>
     </div>
 
     <div class="card" id="hvRepCrewCard" style="display:none;">
@@ -1989,13 +1979,6 @@
     <div class="settings-link" id="openManageHarvest" role="button" tabindex="0">🌿 Strains, Jobs &amp; Rooms</div>
 
     <details class="settings-subsection">
-      <summary>🔀 Section Order</summary>
-      <p style="font-size:0.75rem;color:var(--muted);margin:0 0 8px;">Reorder the sections on the main screen.</p>
-      <div id="sectionOrderList"></div>
-      <button class="btn btn-secondary btn-small" id="resetSectionOrder" style="width:100%;margin-top:10px;">Reset to Default Order</button>
-    </details>
-
-    <details class="settings-subsection">
       <summary>🎨 Color Scheme</summary>
       <label class="toggle-line" style="margin-bottom:10px;">
         <input type="checkbox" id="darkModeToggle">
@@ -2028,12 +2011,12 @@
       <div id="helpTopics">
 
         <details class="help-topic"><summary>1. Getting started</summary><div class="help-body"><p>Trim Tracker records your work, tracks what you are owed, and produces reports. Data stays on this device. Use the tabs along the bottom: Home (add entries), Payments, Reports, Harvests, and Settings.</p></div></details>
-        <details class="help-topic"><summary>2. Adding entries</summary><div class="help-body"><p>On Home, Add Entry records each job by weight (grams), hours, or expense. Each entry goes to the active harvest (★); choosing another asks first and makes it active. Edit or delete an entry from the Unpaid Entries list.</p><p><strong>B-Buds</strong> (beside the strain) counts a weight separately from the strain's normal weight. Reports list normal weights and B-Buds separately, each with a total, then a combined total. <strong>Room</strong> records where the work was done.</p><p>Turn either off in the ⋮ menu on Add Entry. This only hides it on the form; nothing already recorded is changed or deleted.</p></div></details>
+        <details class="help-topic"><summary>2. Adding entries</summary><div class="help-body"><p>On Home, Add Entry records each job by weight (grams), hours, or expense. Each entry goes to the active harvest (★); choosing another asks first and makes it active. Edit or delete an entry from the Past Entries list on Home.</p><p><strong>B-Buds</strong> (beside the strain) counts a weight separately from the strain's normal weight. Reports list normal weights and B-Buds separately, each with a total, then a combined total. <strong>Room</strong> records where the work was done.</p><p>Turn either off in the ⋮ menu on Add Entry. This only hides it on the form; nothing already recorded is changed or deleted.</p></div></details>
         <details class="help-topic"><summary>3. Harvests</summary><div class="help-body"><p>A harvest groups related entries; one is active at a time. The Harvests tab shows each as a card with notes, strain inventories (entered in pounds, shown in pounds and grams), entries, and reports.</p><p>Marking a harvest complete is only a label; you can still edit it. Deleting a harvest moves its entries, notes, and inventories to a harvest you choose.</p></div></details>
         <details class="help-topic"><summary>4. Payments</summary><div class="help-body"><p>Log a Payment applies the amount to your unpaid work, oldest first, regardless of job type. The Payment Estimator shows what unpaid work is worth at the rates you enter, without recording anything.</p><p>The ⋮ menu on each adds a separate B-Buds rate and separate hourly rates per job.</p></div></details>
-        <details class="help-topic"><summary>5. Reports</summary><div class="help-body"><p>The Reports tab offers Entries, Financial, and All Unpaid reports for today, a day, a date range, all time, or one harvest. Each harvest also has its own Reports page. Use Save as Image to keep a report; the camera button on a section saves only that section.</p></div></details>
+        <details class="help-topic"><summary>5. Reports</summary><div class="help-body"><p>The Reports tab offers Entries, Financial, and Unpaid reports for today, a day, a date range, or all time, optionally for a single harvest. Each harvest also has its own Reports page. Use Save as Image to keep a report; the camera button on a section saves only that section.</p></div></details>
         <details class="help-topic"><summary>6. Manager mode</summary><div class="help-body"><p>For supervising a crew. Switch it on under App mode in Settings. Add Entry then has a Who selector to log weights and hours for yourself or your crew, and Reports adds Crew Reports (full log, by person, by strain). Switching back to Personal mode deletes nothing.</p></div></details>
-        <details class="help-topic"><summary>7. Settings</summary><div class="help-body"><p>Manage your strains, job types, and rooms (alphabetical unless rearranged), the order of sections, and the color scheme. Pound Weight sets grams per pound (default 454, range 400–500); changing it updates every pound figure, including past reports, but never your logged grams.</p></div></details>
+        <details class="help-topic"><summary>7. Settings</summary><div class="help-body"><p>Manage your strains, job types, and rooms (alphabetical unless rearranged), and the color scheme. Pound Weight sets grams per pound (default 454, range 400–500); changing it updates every pound figure, including past reports, but never your logged grams.</p></div></details>
         <details class="help-topic"><summary>8. Backup and restore</summary><div class="help-body"><p>Data is stored only on this device, so download a backup regularly. Restore from Backup replaces all current data. Clear All Data in the Danger Zone cannot be undone.</p></div></details>
         <details class="help-topic"><summary>9. Common questions</summary><div class="help-body"><h4>Did hiding B-Buds or Room delete anything?</h4><p>No. It only hides the option on the form.</p><h4>Why did a pound figure change?</h4><p>Check Pound Weight in Settings.</p><h4>How do I move to another device?</h4><p>Download a backup, then restore it on the new device.</p></div></details>
 
@@ -2137,39 +2120,6 @@
 (function(){
   const STORAGE_KEY = 'trimTrackerData';
   const HOURS_CATEGORY = 'Hours (all hourly work)';
-  // Sections that can be drag-reordered — each belongs to exactly one fixed
-  // page (Trim Manager, Settings and Backup aren't part of this; they're
-  // either whole pages of their own or fixed Settings subsections), and can
-  // only be reordered within its own page (see pageForSection /
-  // applySectionOrder below).
-  const ALL_SECTIONS = ['addEntry', 'totals', 'entries', 'payment', 'estimator', 'personalReports', 'crewReports'];
-  const SECTION_LABELS = {
-    addEntry: '➕ Add Entry',
-    totals: '📊 Unpaid Totals',
-    entries: '📋 Unpaid Entries',
-    payment: '💰 Log a Payment',
-    estimator: '🧮 Payment Estimator',
-    personalReports: '📤 Personal Reports',
-    crewReports: '👥 Crew Reports'
-  };
-  const SECTION_ELEMENT_IDS = {
-    addEntry: 'addEntryCard',
-    totals: 'totalsCard',
-    entries: 'entriesCard',
-    payment: 'paymentCard',
-    estimator: 'estimatorCard',
-    personalReports: 'reportCard',
-    crewReports: 'crewReportCard'
-  };
-  const SECTION_PAGE = {
-    addEntry: 'page-home',
-    totals: 'page-home',
-    entries: 'page-home',
-    payment: 'page-payments',
-    estimator: 'page-payments',
-    personalReports: 'page-reports',
-    crewReports: 'page-reports'
-  };
   const PAGE_IDS = {
     home: 'page-home',
     payments: 'page-payments',
@@ -2178,14 +2128,6 @@
     settings: 'page-settings',
     manageHarvest: 'page-manage-harvest'
   };
-  const SECTION_ORDER_PAGES = ['home', 'payments', 'reports'];
-  const SECTION_ORDER_PAGE_LABELS = {home: '🏠 Home', payments: '💰 Payments', reports: '📤 Reports'};
-
-  // Resolves the page a section lives on.
-  function pageForSection(key){
-    return SECTION_PAGE[key];
-  }
-
   // Fills in defaults for a single trim log row — shared by every harvest's
   // logs migration, so an old harvest gets the same backward-compatible
   // defaults a freshly logged entry would.
@@ -2236,13 +2178,13 @@
       theme: 'forest',
       darkMode: false,
       activeTimer: null,
-      sectionOrder: ALL_SECTIONS.slice(),
       // Trim Manager tracks who trimmed what and how much, entirely
       // separate from the payment/financial data above.
       trimManagerEnabled: false,
       trimEmployees: [],
       trimRooms: [],
       gramsPerLb: 454,
+      totalsUnit: 'lb',
       trimRoomsCustomOrder: false,
       strainsCustomOrder: false,
       jobTypesCustomOrder: false,
@@ -2282,6 +2224,7 @@
     // Weight of a pound in grams (400-500, default 454).
     if(!(parsed.gramsPerLb >= 400 && parsed.gramsPerLb <= 500)) parsed.gramsPerLb = DEFAULT_GRAMS_PER_LB;
     GRAMS_PER_LB = parsed.gramsPerLb;
+    if(parsed.totalsUnit !== 'g' && parsed.totalsUnit !== 'lb') parsed.totalsUnit = 'lb';
     if(!parsed.estimator.hourlyRates || typeof parsed.estimator.hourlyRates !== 'object') parsed.estimator.hourlyRates = {};
     if(!parsed.theme) parsed.theme = 'forest';
     if(parsed.darkMode === undefined) parsed.darkMode = false;
@@ -2419,15 +2362,8 @@
     } else {
       delete parsed.harvestReview;
     }
-    // Keep any known sections the user already ordered, in their saved order,
-    // then append any sections that didn't exist yet when they last saved
-    // (e.g. a new section added in a later version of the app).
-    if(!Array.isArray(parsed.sectionOrder)) parsed.sectionOrder = ALL_SECTIONS.slice();
-    else{
-      const kept = parsed.sectionOrder.filter(k => ALL_SECTIONS.includes(k));
-      const missing = ALL_SECTIONS.filter(k => !kept.includes(k));
-      parsed.sectionOrder = kept.concat(missing);
-    }
+    // Section order was removed as a setting; drop any saved value.
+    delete parsed.sectionOrder;
     // Migrate legacy strains (plain string array) to {name, active} objects.
     parsed.strains = parsed.strains.map(s => typeof s === 'string' ? {name: s, active: true} : s);
     // Migrate legacy job types (no active flag) to include one.
@@ -2516,8 +2452,21 @@
     }
   }
 
+  // Saving can fail (phone storage full, or storage blocked by the browser).
+  // Warn once, instead of silently losing entries, until a save succeeds again.
+  let saveWarned = false;
   function save(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      saveWarned = false;
+      return true;
+    }catch(e){
+      if(!saveWarned){
+        saveWarned = true;
+        alert("Your changes couldn't be saved. The phone's storage may be full or blocked by the browser. Please download a backup from Settings now.");
+      }
+      return false;
+    }
   }
 
   let data = load();
@@ -2525,8 +2474,11 @@
 
   const el = id => document.getElementById(id);
 
+  // Unique id: time + a counter (never repeats within a session) + random part.
+  let uidSeq = 0;
   function uid(){
-    return 'e' + Date.now() + Math.floor(Math.random()*1000);
+    uidSeq = (uidSeq + 1) % 100000;
+    return 'e' + Date.now() + uidSeq.toString(36) + Math.floor(Math.random()*1296).toString(36);
   }
 
   function todayStr(){
@@ -2777,12 +2729,42 @@
       : 'Personal mode: just your own work, entries and payments.';
   }
 
+  // Payments (Log a Payment | Estimator) and Reports (Personal | Crew) show one
+  // card at a time. The pick lasts for the session only; reopening the app
+  // starts on the left side again.
+  let payView = 'payment';
+  let repView = 'personal';
+  function applyCardToggles(){
+    const mgr = !!data.trimManagerEnabled;
+    if(!mgr) repView = 'personal';
+    document.querySelectorAll('#payToggle .pill-btn').forEach(b => b.classList.toggle('active', b.dataset.view === payView));
+    el('paymentCard').style.display = payView === 'payment' ? '' : 'none';
+    el('estimatorCard').style.display = payView === 'estimator' ? '' : 'none';
+    el('reportToggle').style.display = mgr ? 'flex' : 'none';
+    document.querySelectorAll('#reportToggle .pill-btn').forEach(b => b.classList.toggle('active', b.dataset.view === repView));
+    el('reportCard').style.display = repView === 'personal' ? '' : 'none';
+    el('crewReportCard').style.display = (mgr && repView === 'crew') ? '' : 'none';
+  }
+  el('payToggle').addEventListener('click', function(e){
+    const b = e.target.closest('.pill-btn');
+    if(!b) return;
+    payView = b.dataset.view;
+    applyCardToggles();
+  });
+  el('reportToggle').addEventListener('click', function(e){
+    const b = e.target.closest('.pill-btn');
+    if(!b) return;
+    repView = b.dataset.view;
+    applyCardToggles();
+  });
+
   function updateTrimManagerVisibility(){
     const on = !!data.trimManagerEnabled;
     syncModeControl();
     el('crewSettings').style.display = on ? '' : 'none';
     el('whoField').style.display = on ? 'block' : 'none';
-    el('crewReportCard').style.display = on ? '' : 'none';
+    applyCardToggles();
+    renderEntries();
     el('managerSettingsBody').style.display = on ? 'block' : 'none';
     updateWhoView();
   }
@@ -2907,6 +2889,7 @@
   }
 
   function renderTrimDayEntries(){
+    renderEntries();
     const day = crewListDate();
     // Every harvest's entries for this date, so an entry logged to a
     // non-active harvest (via the "Logging to" picker) still shows up here
@@ -3128,13 +3111,12 @@
     el('tm-harvest').innerHTML = harvestOptionsHtml(false, crewPick);
     setHarvestPicker('tm-harvest', crewPick);
 
-    // Report filters keep the user's choice when still valid. Personal
-    // reports default to every harvest (payments span harvests); Trim
-    // Manager reports follow the active harvest until the user picks one.
+    // Report filters keep the user's choice when still valid; until the user
+    // picks one they follow the active harvest.
     const rh = el('r-harvest');
     const prevR = rh.value;
-    rh.innerHTML = harvestOptionsHtml(true, undefined, true);
-    rh.value = findTrimHarvest(prevR) ? prevR : active.id;
+    rh.innerHTML = harvestOptionsHtml(true);
+    rh.value = (rh.dataset.touched && (prevR === 'all' || findTrimHarvest(prevR))) ? prevR : active.id;
     const th = el('tm-r-harvest');
     const prevT = th.value;
     th.innerHTML = harvestOptionsHtml(true);
@@ -3172,6 +3154,7 @@
   });
   wireHarvestPicker('tm-harvest', () => editingTrimLogId ? editingTrimLogHarvestId : null);
   el('tm-r-harvest').addEventListener('change', function(){ this.dataset.touched = '1'; });
+  el('r-harvest').addEventListener('change', function(){ this.dataset.touched = '1'; });
 
   // Entries that were auto-placed in the earlier of two overlapping
   // harvests when old date-range harvests were migrated — listed until the
@@ -3204,6 +3187,7 @@
   let openHarvestMenuId = null;
 
   function renderTrimHarvestsList(){
+    renderEntries();
     const container = el('tmHarvestArchivesList');
     // Active first, then in-progress harvests, then completed ones.
     const harvests = data.trimHarvests.filter(h => !h.deleted).sort((a,b) => {
@@ -3943,7 +3927,7 @@
       const cat = data.categories.find(c => c.name === name);
       const checked = cat ? cat.active : false;
       return `<label class="toggle-line">
-        <input type="checkbox" ${checked ? 'checked' : ''} onchange="TT.toggleCategoryPreset('${escapeHtml(name)}')">
+        <input type="checkbox" ${checked ? 'checked' : ''} onchange="TT.toggleCategoryPreset(${jsq(name)})">
         <span>${escapeHtml(name)}</span>
       </label>`;
     }).join('') + `<label class="toggle-line">
@@ -4160,6 +4144,12 @@
 
   function escapeHtml(str){
     return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Safely embeds a value as a JavaScript string inside an inline HTML handler
+  // (onclick="...") — names with apostrophes, quotes or & still work.
+  function jsq(v){
+    return escapeHtml(JSON.stringify(String(v)));
   }
 
   // Entries can be logged with no strain selected — show a clear placeholder
@@ -4641,11 +4631,34 @@
   }
 
   // ---- Rendering ----
+  // The Unpaid Totals weight box shows pounds by default; tapping it switches
+  // to grams (and back). Pounds are display-only: grams stay the source of truth.
+  let lastUnpaidGrams = 0;
+  function renderTotalsWeight(){
+    const inLb = data.totalsUnit !== 'g';
+    el('totalGrams').textContent = inLb
+      ? roundNum(lastUnpaidGrams / GRAMS_PER_LB, 2).toLocaleString() + ' lb'
+      : lastUnpaidGrams.toLocaleString() + 'g';
+    el('totalGramsLbl').textContent = inLb ? 'Pounds' : 'Grams';
+    el('totalUnitBadge').textContent = inLb ? 'g' : 'lb';
+    el('totalUnitBadge').classList.toggle('is-g', inLb);
+  }
+  function toggleTotalsUnit(){
+    data.totalsUnit = data.totalsUnit === 'g' ? 'lb' : 'g';
+    save();
+    renderTotalsWeight();
+  }
+  el('totalWeightStat').addEventListener('click', toggleTotalsUnit);
+  el('totalWeightStat').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleTotalsUnit(); }
+  });
+
   function renderTotals(){
     const bal = computeBalance();
     const unpaidGrams = bal.strains.reduce((s,strain) => s + Math.max(0, strain.owed), 0);
     const unpaidHours = bal.hourlyJobs.reduce((s,job) => s + Math.max(0, job.owed), 0);
-    el('totalGrams').textContent = unpaidGrams.toLocaleString() + 'g';
+    lastUnpaidGrams = unpaidGrams;
+    renderTotalsWeight();
     el('totalHours').textContent = unpaidHours.toLocaleString();
     // Keep the Payment Estimator's prefilled Grams/Hours in sync with the
     // live unpaid balance — previously this only ran once on page load,
@@ -4779,59 +4792,100 @@
     return coverageByPayment;
   }
 
+  // Past Entries (Home): the last 7 days of work, whatever its paid status.
+  // "Show more" expands in place to every entry in the active harvest. In
+  // manager mode a Personal | Crew toggle switches between your own entries
+  // and the crew's. Both choices last for the session only.
+  var entriesView = 'personal';
+  var entriesExpanded = false;
+
+  function dateStrDaysAgo(n){
+    const [y, m, d] = todayStr().split('-').map(Number);
+    const dt = new Date(y, m - 1, d - n);
+    return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+  }
+
   function renderEntries(){
     const container = el('entriesList');
-    const ledger = computeEntryLedger();
+    const mgr = !!data.trimManagerEnabled;
+    if(!mgr) entriesView = 'personal';
+    el('entriesToggle').style.display = mgr ? 'flex' : 'none';
+    document.querySelectorAll('#entriesToggle .pill-btn').forEach(b => b.classList.toggle('active', b.dataset.view === entriesView));
+    el('entriesMore').textContent = entriesExpanded ? 'Show less' : 'Show more';
+
+    const cutoff = dateStrDaysAgo(6);
+    const active = getActiveHarvest();
+    let rows;
+    if(entriesView === 'crew'){
+      rows = [];
+      data.trimHarvests.filter(h => !h.deleted).forEach(h => {
+        if(entriesExpanded && h.id !== active.id) return;
+        h.logs.forEach(t => {
+          if(!entriesExpanded && t.date < cutoff) return;
+          rows.push({
+            id: t.id, date: t.date,
+            label: escapeHtml(t.person) + ' · ' + escapeHtml(trimEntryDetailText(t)),
+            meta: h.active ? '' : h.name,
+            grams: t.grams || 0, hours: t.hours || 0, amount: 0,
+            edit: `TT.editTrimHarvestLog('${h.id}','${t.id}')`,
+            del: `TT.deleteTrimHarvestLog('${h.id}','${t.id}')`
+          });
+        });
+      });
+    } else {
+      rows = data.entries
+        .filter(e => entriesExpanded ? e.harvestId === active.id : e.date >= cutoff)
+        .map(e => {
+          const catTags = categoryTagsText(e.categories);
+          const label = escapeHtml(e.job) + (e.strain ? ' · ' + escapeHtml(e.strain) : '') + (e.bbuds ? ' · B-Buds' : '') + (e.description ? ' · ' + escapeHtml(e.description) : '') + (catTags ? ' · ' + escapeHtml(catTags) : '');
+          return {
+            id: e.id, date: e.date, label, meta: '',
+            grams: e.grams || 0, hours: e.hours || 0, amount: e.amount || 0,
+            edit: `TT.edit('${e.id}')`, del: `TT.del('${e.id}')`
+          };
+        });
+    }
 
     const byDate = {};
-    data.entries.forEach(e => {
-      const grams = e.grams > 0 ? (ledger.unpaidGrams[e.id] ?? e.grams) : 0;
-      const hours = e.hours > 0 ? (ledger.unpaidHours[e.id] ?? e.hours) : 0;
-      const amount = e.amount || 0;
-      // Expenses have no paid/unpaid concept — they're a straight logged
-      // record, so they always stay visible until deleted.
-      if(grams <= 0.05 && hours <= 0.01 && amount <= 0) return;
-      if(!byDate[e.date]) byDate[e.date] = [];
-      byDate[e.date].push({...e, grams, hours, amount});
-    });
-
+    rows.forEach(r => { (byDate[r.date] = byDate[r.date] || []).push(r); });
     const dates = Object.keys(byDate).sort((a,b) => b.localeCompare(a));
 
+    const heading = entriesExpanded ? `<div class="meta" style="margin-bottom:6px;">All entries · ${escapeHtml(active.name)}</div>` : '';
     if(dates.length === 0){
-      const message = data.entries.length === 0
-        ? 'No entries yet. Add your first one above 🌱'
-        : 'Nothing unpaid — you\'re all caught up 🌿';
-      container.innerHTML = `<div class="empty">${message}</div>`;
+      let message;
+      if(entriesExpanded) message = 'No entries in this harvest yet.';
+      else if(data.entries.length === 0 && !data.trimHarvests.some(h => h.logs.length)) message = 'No entries yet. Add your first one above 🌱';
+      else message = 'No entries in the last 7 days.';
+      container.innerHTML = heading + `<div class="empty">${message}</div>`;
       return;
     }
 
-    container.innerHTML = dates.map(d => {
-      const items = byDate[d];
-      const dayGrams = items.reduce((s,e) => s + (e.grams||0), 0);
-      const dayHours = items.reduce((s,e) => s + (e.hours||0), 0);
-      const dayAmount = items.reduce((s,e) => s + (e.amount||0), 0);
+    container.innerHTML = heading + dates.map(d => {
+      const items = byDate[d].slice().sort((a,b) => String(a.id).localeCompare(String(b.id)));
+      const dayGrams = items.reduce((s,e) => s + e.grams, 0);
+      const dayHours = items.reduce((s,e) => s + e.hours, 0);
+      const dayAmount = items.reduce((s,e) => s + e.amount, 0);
       const subParts = [];
       if(dayGrams > 0) subParts.push(roundNum(dayGrams,1).toLocaleString() + 'g');
       if(dayHours > 0) subParts.push(roundNum(dayHours,2).toLocaleString() + ' hrs');
       if(dayAmount > 0) subParts.push('$' + roundNum(dayAmount,2).toLocaleString());
 
-      const rows = items.map(e => {
+      const rowsHtml = items.map(e => {
         const amountParts = [];
         if(e.grams > 0) amountParts.push(e.grams.toLocaleString() + 'g');
         if(e.hours > 0) amountParts.push(e.hours.toLocaleString() + 'h');
         if(e.amount > 0) amountParts.push('$' + e.amount.toLocaleString());
-        const catTags = categoryTagsText(e.categories);
-        const label = escapeHtml(e.job) + (e.strain ? ' · ' + escapeHtml(e.strain) : '') + (e.bbuds ? ' · B-Buds' : '') + (e.description ? ' · ' + escapeHtml(e.description) : '') + (catTags ? ' · ' + escapeHtml(catTags) : '');
         return `
           <div class="entry">
             <div>
-              <div class="job">${label}</div>
+              <div class="job">${e.label}</div>
+              ${e.meta ? `<div class="meta">${escapeHtml(e.meta)}</div>` : ''}
             </div>
             <div style="display:flex;align-items:center;">
               <div class="amounts">${amountParts.join(' / ') || '—'}</div>
               <div class="actions">
-                <button class="icon-btn" onclick="TT.edit('${e.id}')" title="Edit">✏️</button>
-                <button class="icon-btn" onclick="TT.del('${e.id}')" title="Delete">🗑️</button>
+                <button class="icon-btn" onclick="${e.edit}" title="Edit">✏️</button>
+                <button class="icon-btn" onclick="${e.del}" title="Delete">🗑️</button>
               </div>
             </div>
           </div>`;
@@ -4843,11 +4897,21 @@
             <span class="d">${fmtDate(d)}</span>
             <span class="sub">${subParts.join(' · ')}</span>
           </div>
-          ${rows}
+          ${rowsHtml}
         </div>`;
     }).join('');
   }
 
+  el('entriesToggle').addEventListener('click', function(e){
+    const b = e.target.closest('.pill-btn');
+    if(!b) return;
+    entriesView = b.dataset.view;
+    renderEntries();
+  });
+  el('entriesMore').addEventListener('click', function(){
+    entriesExpanded = !entriesExpanded;
+    renderEntries();
+  });
 
   function computeBalance(){
     const keyMeta = {};
@@ -5003,14 +5067,14 @@
     el('strainChips').innerHTML = data.strains.filter(s => !s.deleted).map(s => `
       <div class="jobtype-item">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;">
-          <input type="checkbox" ${s.active ? 'checked' : ''} onchange="TT.toggleStrain('${escapeHtml(s.name)}')">
+          <input type="checkbox" ${s.active ? 'checked' : ''} onchange="TT.toggleStrain(${jsq(s.name)})">
           <span${s.active ? '' : ' style="color:var(--muted);text-decoration:line-through;"'}>${escapeHtml(s.name)}</span>
         </label>
         <div style="display:flex;gap:2px;">
-          <button class="icon-btn" onclick="TT.moveItem('strains','${escapeHtml(s.name)}',-1)" title="Move up">▲</button>
-          <button class="icon-btn" onclick="TT.moveItem('strains','${escapeHtml(s.name)}',1)" title="Move down">▼</button>
-          <button class="icon-btn" onclick="TT.editStrain('${escapeHtml(s.name)}')" title="Edit">✏️</button>
-          <button class="icon-btn" onclick="TT.removeStrain('${escapeHtml(s.name)}')" title="Delete">🗑️</button>
+          <button class="icon-btn" onclick="TT.moveItem('strains',${jsq(s.name)},-1)" title="Move up">▲</button>
+          <button class="icon-btn" onclick="TT.moveItem('strains',${jsq(s.name)},1)" title="Move down">▼</button>
+          <button class="icon-btn" onclick="TT.editStrain(${jsq(s.name)})" title="Edit">✏️</button>
+          <button class="icon-btn" onclick="TT.removeStrain(${jsq(s.name)})" title="Delete">🗑️</button>
         </div>
       </div>
     `).join('') || '<span style="color:var(--muted);font-size:0.85rem;">No strains added yet</span>';
@@ -5020,14 +5084,14 @@
     el('employeeChips').innerHTML = data.trimEmployees.filter(p => !p.deleted).map(p => `
       <div class="jobtype-item">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;">
-          <input type="checkbox" ${p.active ? 'checked' : ''} onchange="TT.toggleEmployee('${escapeHtml(p.name)}')">
+          <input type="checkbox" ${p.active ? 'checked' : ''} onchange="TT.toggleEmployee(${jsq(p.name)})">
           <span${p.active ? '' : ' style="color:var(--muted);text-decoration:line-through;"'}>${escapeHtml(p.name)}${p.name === getMeName() ? ' <span class="tag">me</span>' : ''}</span>
         </label>
         <div style="display:flex;gap:2px;">
-          <button class="icon-btn" onclick="TT.moveItem('trimEmployees','${escapeHtml(p.name)}',-1)" title="Move up">▲</button>
-          <button class="icon-btn" onclick="TT.moveItem('trimEmployees','${escapeHtml(p.name)}',1)" title="Move down">▼</button>
-          <button class="icon-btn" onclick="TT.editEmployee('${escapeHtml(p.name)}')" title="Edit">✏️</button>
-          <button class="icon-btn" onclick="TT.removeEmployee('${escapeHtml(p.name)}')" title="Delete">🗑️</button>
+          <button class="icon-btn" onclick="TT.moveItem('trimEmployees',${jsq(p.name)},-1)" title="Move up">▲</button>
+          <button class="icon-btn" onclick="TT.moveItem('trimEmployees',${jsq(p.name)},1)" title="Move down">▼</button>
+          <button class="icon-btn" onclick="TT.editEmployee(${jsq(p.name)})" title="Edit">✏️</button>
+          <button class="icon-btn" onclick="TT.removeEmployee(${jsq(p.name)})" title="Delete">🗑️</button>
         </div>
       </div>
     `).join('') || '<span style="color:var(--muted);font-size:0.85rem;">No crew members added yet</span>';
@@ -5054,14 +5118,14 @@
     el('roomChips').innerHTML = data.trimRooms.filter(r => !r.deleted).map(r => `
       <div class="jobtype-item">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;">
-          <input type="checkbox" ${r.active ? 'checked' : ''} onchange="TT.toggleRoom('${escapeHtml(r.name)}')">
+          <input type="checkbox" ${r.active ? 'checked' : ''} onchange="TT.toggleRoom(${jsq(r.name)})">
           <span${r.active ? '' : ' style="color:var(--muted);text-decoration:line-through;"'}>${escapeHtml(r.name)}</span>
         </label>
         <div style="display:flex;gap:2px;">
-          <button class="icon-btn" onclick="TT.moveRoom('${escapeHtml(r.name)}',-1)" title="Move up">▲</button>
-          <button class="icon-btn" onclick="TT.moveRoom('${escapeHtml(r.name)}',1)" title="Move down">▼</button>
-          <button class="icon-btn" onclick="TT.editRoom('${escapeHtml(r.name)}')" title="Edit">✏️</button>
-          <button class="icon-btn" onclick="TT.removeRoom('${escapeHtml(r.name)}')" title="Delete">🗑️</button>
+          <button class="icon-btn" onclick="TT.moveRoom(${jsq(r.name)},-1)" title="Move up">▲</button>
+          <button class="icon-btn" onclick="TT.moveRoom(${jsq(r.name)},1)" title="Move down">▼</button>
+          <button class="icon-btn" onclick="TT.editRoom(${jsq(r.name)})" title="Edit">✏️</button>
+          <button class="icon-btn" onclick="TT.removeRoom(${jsq(r.name)})" title="Delete">🗑️</button>
         </div>
       </div>
     `).join('') || '<span style="color:var(--muted);font-size:0.85rem;">No rooms added yet</span>';
@@ -5071,128 +5135,17 @@
     el('jobTypeList').innerHTML = data.jobTypes.filter(j => !j.deleted).map(j => `
       <div class="jobtype-item">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;">
-          <input type="checkbox" ${j.active ? 'checked' : ''} onchange="TT.toggleJobType('${escapeHtml(j.name)}')">
+          <input type="checkbox" ${j.active ? 'checked' : ''} onchange="TT.toggleJobType(${jsq(j.name)})">
           <span${j.active ? '' : ' style="color:var(--muted);text-decoration:line-through;"'}>${escapeHtml(j.name)} <span class="tag">${j.kind === 'piece' ? 'by grams' : j.kind === 'expense' ? 'by expense' : 'by hours'}</span></span>
         </label>
         <div style="display:flex;gap:2px;">
-          <button class="icon-btn" onclick="TT.moveItem('jobTypes','${escapeHtml(j.name)}',-1)" title="Move up">▲</button>
-          <button class="icon-btn" onclick="TT.moveItem('jobTypes','${escapeHtml(j.name)}',1)" title="Move down">▼</button>
-          <button class="icon-btn" onclick="TT.editJobType('${escapeHtml(j.name)}')" title="Edit">✏️</button>
-          <button class="icon-btn" onclick="TT.removeJobType('${escapeHtml(j.name)}')" title="Delete">🗑️</button>
+          <button class="icon-btn" onclick="TT.moveItem('jobTypes',${jsq(j.name)},-1)" title="Move up">▲</button>
+          <button class="icon-btn" onclick="TT.moveItem('jobTypes',${jsq(j.name)},1)" title="Move down">▼</button>
+          <button class="icon-btn" onclick="TT.editJobType(${jsq(j.name)})" title="Edit">✏️</button>
+          <button class="icon-btn" onclick="TT.removeJobType(${jsq(j.name)})" title="Delete">🗑️</button>
         </div>
       </div>
     `).join('') || '<span style="color:var(--muted);font-size:0.85rem;">No job types added yet</span>';
-  }
-
-  // ---- Section order ----
-  // Grouped by page so it's clear at a glance what lives where. Every
-  // section can be dragged up/down within its own group.
-  function groupSectionOrderByPage(){
-    const groups = {home: [], payments: [], reports: []};
-    data.sectionOrder.forEach(key => {
-      if(key === 'crewReports' && !data.trimManagerEnabled) return; // crew reports only exist in manager mode
-      const pageId = pageForSection(key);
-      const pageKey = SECTION_ORDER_PAGES.find(p => PAGE_IDS[p] === pageId);
-      if(pageKey) groups[pageKey].push(key);
-    });
-    return groups;
-  }
-
-  function renderSectionOrderList(){
-    const groups = groupSectionOrderByPage();
-    el('sectionOrderList').innerHTML = SECTION_ORDER_PAGES.map(pageKey => `
-      <div class="section-order-group">
-        <div class="section-order-group-label">${SECTION_ORDER_PAGE_LABELS[pageKey]}</div>
-        <div class="section-order-rows" data-page="${pageKey}">
-          ${groups[pageKey].length ? groups[pageKey].map(key => `
-            <div class="section-order-row" data-key="${key}">
-              <span class="drag-handle" title="Drag to reorder">☰</span>
-              <span>${SECTION_LABELS[key] || key}</span>
-            </div>
-          `).join('') : '<div class="section-order-empty">Nothing here</div>'}
-        </div>
-      </div>
-    `).join('');
-    wireSectionOrderDrag();
-  }
-
-  function wireSectionOrderDrag(){
-    const groupLists = Array.from(document.querySelectorAll('#sectionOrderList .section-order-rows'));
-    let dragEl = null;
-    let dragList = null;
-
-    function getRows(list){
-      return Array.from(list.querySelectorAll('.section-order-row'));
-    }
-
-    function onPointerMove(e){
-      if(!dragEl || !dragList) return;
-      e.preventDefault();
-      const y = e.clientY;
-      const rows = getRows(dragList);
-      const dragIndex = rows.indexOf(dragEl);
-      for(let i = 0; i < rows.length; i++){
-        const row = rows[i];
-        if(row === dragEl) continue;
-        const rect = row.getBoundingClientRect();
-        const mid = rect.top + rect.height / 2;
-        if(i < dragIndex && y < mid){
-          dragList.insertBefore(dragEl, row);
-          return;
-        }
-        if(i > dragIndex && y > mid){
-          dragList.insertBefore(dragEl, row.nextSibling);
-          return;
-        }
-      }
-    }
-
-    function endDrag(){
-      if(!dragEl) return;
-      dragEl.classList.remove('dragging');
-      document.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('pointerup', endDrag);
-      document.removeEventListener('pointercancel', endDrag);
-      // Rebuild the flat saved order from each page group's current DOM
-      // order — dragging only ever reorders within one group, so
-      // concatenating the groups in a fixed order is always safe.
-      const newOrder = [];
-      groupLists.forEach(list => { getRows(list).forEach(r => newOrder.push(r.dataset.key)); });
-      // Keep any section that wasn't listed (e.g. Crew Reports while manager mode is off).
-      data.sectionOrder.forEach(k => { if(!newOrder.includes(k)) newOrder.push(k); });
-      data.sectionOrder = newOrder;
-      save();
-      applySectionOrder();
-      dragEl = null;
-      dragList = null;
-    }
-
-    groupLists.forEach(list => {
-      list.querySelectorAll('.drag-handle').forEach(handle => {
-        handle.addEventListener('pointerdown', function(e){
-          dragEl = handle.closest('.section-order-row');
-          dragList = list;
-          if(!dragEl) return;
-          dragEl.classList.add('dragging');
-          document.addEventListener('pointermove', onPointerMove);
-          document.addEventListener('pointerup', endDrag);
-          document.addEventListener('pointercancel', endDrag);
-          e.preventDefault();
-        });
-      });
-    });
-  }
-
-  function applySectionOrder(){
-    // Every section lives on one fixed page (Home or Payments). Appending
-    // in data.sectionOrder's relative order moves each node to the end of
-    // its page's container, which naturally produces the right order
-    // within that page without disturbing other pages.
-    data.sectionOrder.forEach(key => {
-      const node = document.getElementById(SECTION_ELEMENT_IDS[key]);
-      const pageEl = document.getElementById(pageForSection(key));
-      if(node && pageEl) pageEl.appendChild(node);
-    });
   }
 
   // ---- Color scheme ----
@@ -5373,7 +5326,6 @@
     renderEmployeeChips();
     populateTrimPersonSelect(on ? getMeName() : undefined);
     updateTrimManagerVisibility();
-    renderSectionOrderList();
   }
 
   el('trimManagerToggle').addEventListener('change', function(){ setManagerMode(this.checked); });
@@ -5397,13 +5349,6 @@
     renderJobTypes();
     populateJobSelect();
     if(el('splitHourlyRates').checked) renderHourlyRateSplit();
-  });
-
-  el('resetSectionOrder').addEventListener('click', function(){
-    data.sectionOrder = ALL_SECTIONS.slice();
-    save();
-    renderSectionOrderList();
-    applySectionOrder();
   });
 
   el('resetAll').addEventListener('click', function(){
@@ -6034,7 +5979,7 @@
     if(!scoped) return;
     const scopedEntries = scoped.entries;
     const scopedIds = new Set(scopedEntries.map(e => e.id));
-    // "All Unpaid" shows only what's still outstanding — no payments, no
+    // "Unpaid" shows only what's still outstanding — no payments, no
     // already-covered work; part-paid entries are marked Partial.
     const unpaidMode = !!scoped.showRemaining;
 
@@ -6164,7 +6109,7 @@
     });
     outstandingItems.sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
 
-    const title = unpaidMode ? 'All Unpaid' : 'Financial Report';
+    const title = unpaidMode ? 'Unpaid' : 'Financial Report';
     const subtitle = scoped.subtitle + ' · Generated ' + fmtDate(todayStr());
     el('reportTitle').textContent = title;
     el('reportSubtitle').textContent = subtitle;
@@ -6757,7 +6702,7 @@
   // Per-section export for the trim-log reports: reconstructs just one box
   // (Strain Totals, Hours Totals, a single day, or a single person) from the
   // report's underlying logs and renders only that section as its own PNG.
-  // The Balance box on Financial / All Unpaid reports (also used by the
+  // The Balance box on Financial / Unpaid reports (also used by the
   // whole-report image).
   function buildBalanceSection(lr){
     const balanceItems = [];
@@ -6840,7 +6785,7 @@
   });
 
   // ---- Report scope selector ----
-  let reportScope = 'unpaid';
+  let reportScope = 'all';
 
   function setReportScope(scope){
     reportScope = scope;
@@ -6849,27 +6794,20 @@
     });
     el('scopeDayInput').style.display = scope === 'day' ? 'block' : 'none';
     el('scopeRangeInput').style.display = scope === 'range' ? 'block' : 'none';
-    el('scopeHarvestInput').style.display = scope === 'harvest' ? 'block' : 'none';
   }
 
   // Three personal reports: Entries (every entry in the period, with its
-  // paid status), Financial (paid + outstanding together), and All Unpaid
-  // (only what's still owed). Entries and Financial share the "For" scope;
-  // All Unpaid has no scope since it's always everything outstanding.
+  // paid status), Financial (paid + outstanding together), and Unpaid (only
+  // what's still owed). All three use the "Report for" time range and the
+  // Harvest filter; choosing Unpaid starts the time range at All Time.
   let reportType = 'entries';
-  const REPORT_TYPE_HINTS = {
-    entries: 'Every entry in the period, grouped by day. Trimming data only — no payment info.',
-    financial: 'Paid and unpaid together: each payment and what it covered, what\'s still owed, and totals.',
-    unpaid: 'Only what\'s still owed. Part-paid entries show the amount remaining and are marked Partial. No payments.'
-  };
 
   function setReportType(type){
     reportType = type;
     document.querySelectorAll('#reportTypeSegmented .seg-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.rtype === type);
     });
-    el('reportTypeHint').textContent = REPORT_TYPE_HINTS[type];
-    el('reportScopeBlock').style.display = type === 'unpaid' ? 'none' : 'block';
+    if(type === 'unpaid') setReportScope('all');
   }
 
   document.querySelectorAll('#reportTypeSegmented .seg-btn').forEach(btn => {
@@ -6898,14 +6836,15 @@
     });
   });
 
-  function getScopedEntries(scopeOverride){
-    const scope = scopeOverride || reportScope;
-    // from/to are the effective date bounds for the current scope (both
-    // null when unbounded, e.g. 'all' or 'unpaid') — other reports that
-    // need to scope something besides entries (like Harvest Summary
-    // scoping its payments too) can reuse these instead of re-deriving
-    // the same day/from/to logic themselves.
-    let entries, subtitle, showRemaining = false, from = null, to = null;
+  // Entries for the chosen time range ("Report for") and Harvest filter.
+  // Pass 'unpaid' to keep only work that's still owed (Unpaid report).
+  function getScopedEntries(mode){
+    const unpaidOnly = mode === 'unpaid';
+    const scope = reportScope;
+    // from/to are the effective date bounds (both null when unbounded) so
+    // other reports (like Financial, which also scopes its payments) can
+    // reuse them instead of re-deriving the same day/from/to logic.
+    let entries, subtitle, from = null, to = null;
 
     if(scope === 'day'){
       const day = el('r-day').value;
@@ -6913,12 +6852,12 @@
         alert('Pick a day first.');
         return null;
       }
-      entries = data.entries.filter(e => e.date === day).slice().sort((a,b) => String(a.id).localeCompare(String(b.id)));
+      entries = data.entries.filter(e => e.date === day);
       subtitle = fmtDate(day);
       from = day; to = day;
     } else if(scope === 'today'){
       const day = todayStr();
-      entries = data.entries.filter(e => e.date === day).slice().sort((a,b) => String(a.id).localeCompare(String(b.id)));
+      entries = data.entries.filter(e => e.date === day);
       subtitle = fmtDate(day);
       from = day; to = day;
     } else if(scope === 'range'){
@@ -6927,35 +6866,27 @@
       entries = data.entries.slice();
       if(from) entries = entries.filter(e => e.date >= from);
       if(to) entries = entries.filter(e => e.date <= to);
-      entries.sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
       subtitle = (from || to) ? `${from ? fmtDate(from) : 'Start'} – ${to ? fmtDate(to) : 'Now'}` : 'All entries';
-    } else if(scope === 'unpaid'){
-      const ledger = computeEntryLedger();
-      entries = data.entries
-        .filter(e => entryStatus(e, ledger) !== 'paid')
-        .slice()
-        .sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
-      subtitle = `Generated ${fmtDate(todayStr())}`;
-      showRemaining = true;
-    } else if(scope === 'harvest'){
-      const h = findTrimHarvest(el('r-harvest').value);
-      if(!h){
-        alert('Pick a harvest first.');
-        return null;
-      }
-      entries = data.entries
-        .filter(e => e.harvestId === h.id)
-        .slice()
-        .sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
-      subtitle = h.name;
-    } else if(scope === 'all'){
-      entries = data.entries
-        .slice()
-        .sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
-      subtitle = 'All entries';
+    } else {
+      entries = data.entries.slice();
+      subtitle = unpaidOnly ? `Generated ${fmtDate(todayStr())}` : 'All entries';
     }
 
-    return {entries, subtitle, showRemaining, from, to, harvestScoped: scope === 'harvest'};
+    // Harvest filter: one harvest, or every harvest combined.
+    const harvestSel = el('r-harvest').value;
+    const picked = harvestSel === 'all' ? null : (findTrimHarvest(harvestSel) || getActiveHarvest());
+    if(picked) entries = entries.filter(e => e.harvestId === picked.id);
+
+    let showRemaining = false;
+    if(unpaidOnly){
+      const ledger = computeEntryLedger();
+      entries = entries.filter(e => entryStatus(e, ledger) !== 'paid');
+      showRemaining = true;
+    }
+    entries = entries.slice().sort((a,b) => a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
+    subtitle = subtitle + ' · ' + (picked ? picked.name : 'All harvests');
+
+    return {entries, subtitle, showRemaining, from, to, harvestScoped: !!picked};
   }
 
   el('generateReport').addEventListener('click', function(){
@@ -7297,7 +7228,13 @@
     setReportScope('all');
     setReportType('entries');
     resumeTimerIfActive();
-    initCollapsibleSections(['paymentCard', 'reportCard', 'estimatorCard', 'paymentHistorySection']);
+    initCollapsibleSections(['paymentHistorySection']);
+    // These cards are always open.
+    document.querySelectorAll('details.fixed-card').forEach(d => {
+      d.open = true;
+      const sm = d.querySelector(':scope > summary');
+      if(sm) sm.addEventListener('click', e => e.preventDefault());
+    });
 
     // Trim Manager
     el('trimManagerToggle').checked = !!data.trimManagerEnabled;
@@ -7313,8 +7250,6 @@
     setTrimReportScope('all');
     updateTrimManagerVisibility();
 
-    renderSectionOrderList();
-    applySectionOrder();
     showPage(currentPage);
 
     // One-time heads-up after old date-range harvests were migrated and some
